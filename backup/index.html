@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShuttleSplit - Badminton Court Fee Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-table-tennis"></i>
+                    <h1>ShuttleSplit</h1>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Session Settings -->
+            <section class="card session-settings">
+                <h2><i class="fas fa-cog"></i> Session Settings</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="courtFee">Court Fee per Session</label>
+                        <div class="input-wrapper">
+                            <span class="currency">₫</span>
+                            <input type="number" id="courtFee" placeholder="Enter court fee" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="shuttlecockPrice">Shuttlecock Price (per piece)</label>
+                        <div class="input-wrapper">
+                            <span class="currency">₫</span>
+                            <input type="number" id="shuttlecockPrice" placeholder="Enter shuttlecock price" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="shuttlecockCount">Number of Shuttlecocks Used</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-feather-alt"></i>
+                            <input type="number" id="shuttlecockCount" placeholder="Enter count" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="waterFee">Water Fee per Session</label>
+                        <div class="input-wrapper">
+                            <span class="currency">₫</span>
+                            <input type="number" id="waterFee" placeholder="Enter water fee" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalFee">Additional Court Fee</label>
+                        <div class="input-wrapper">
+                            <span class="currency">₫</span>
+                            <input type="number" id="additionalFee" placeholder="Enter additional fee" min="0">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Players Management -->
+            <section class="card players-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Players Management</h2>
+                    <button class="btn btn-primary" onclick="addPlayer()">
+                        <i class="fas fa-user-plus"></i> Add Player
+                    </button>
+                </div>
+                
+                <div class="add-player-form" id="addPlayerForm" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="playerName">Player Name</label>
+                            <input type="text" id="playerName" placeholder="Enter player name">
+                        </div>
+                        <div class="form-group">
+                            <label for="playerType">Player Type</label>
+                            <select id="playerType">
+                                <option value="fixed">Fixed Registration</option>
+                                <option value="transient">Transient (+10,000₫)</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success" onclick="savePlayer()">
+                                <i class="fas fa-check"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelAddPlayer()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="players-list" id="playersList">
+                    <!-- Players will be added here dynamically -->
+                </div>
+            </section>
+
+            <!-- Sessions Management -->
+            <section class="card sessions-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Sessions</h2>
+                    <button class="btn btn-primary" onclick="addSession()">
+                        <i class="fas fa-plus"></i> Add Session
+                    </button>
+                </div>
+                <div class="sessions-list" id="sessionsList">
+                    <!-- Sessions will be added here dynamically -->
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section class="card summary-section">
+                <h2><i class="fas fa-chart-line"></i> Summary</h2>
+                <div class="summary-content" id="summaryContent">
+                    <!-- Summary will be generated here -->
+                </div>
+                
+                <!-- QR Code Section -->
+                <div class="qr-section" id="qrSection" style="display: none;">
+                    <h3><i class="fas fa-qrcode"></i> Payment QR Code</h3>
+                    <div class="qr-container">
+                        <div id="qrcode"></div>
+                        <div class="qr-info">
+                            <p><strong>Bank Details:</strong></p>
+                            <p id="bankInfo">Enter your bank information in settings</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Modal -->
+            <div class="modal" id="settingsModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-credit-card"></i> Payment Settings</h3>
+                        <button class="close-btn" onclick="closeSettings()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="bankName">Bank Name</label>
+                            <input type="text" id="bankName" placeholder="Enter bank name">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountNumber">Account Number</label>
+                            <input type="text" id="accountNumber" placeholder="Enter account number">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountHolder">Account Holder</label>
+                            <input type="text" id="accountHolder" placeholder="Enter account holder name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                        <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Settings Button -->
+        <button class="settings-btn" onclick="openSettings()">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
