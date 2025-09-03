@@ -132,3 +132,35 @@ For issues or questions, please create an issue in the repository or contact the
 ---
 
 **ShuttleSplit** - Making badminton cost sharing simple and fair! 🏸
+
+## Deployment (GitHub Pages)
+
+- **Prerequisites**: A GitHub repository with this project pushed to `main`.
+- **Branch**: The site will be published from the `gh-pages` branch.
+
+### One-time setup
+- Ensure `homepage` is set and `gh-pages` is installed (already configured in `package.json`).
+- A SPA fallback `public/404.html` is present (already added).
+- GitHub Actions workflow `.github/workflows/deploy.yml` is included (already added).
+
+### Manual deploy from local
+- Run:
+
+```bash
+npm install
+npm run deploy
+```
+
+This builds the project and pushes `build/` to the `gh-pages` branch.
+
+### Automatic deploys (recommended)
+- Push to `main`. The workflow builds and deploys automatically.
+- Check deployment under the Actions tab.
+
+### Enable GitHub Pages
+- In your repository settings:
+  - Pages → Source: Select `Deploy from a branch`
+  - Branch: `gh-pages` / folder `/ (root)`
+
+### Site URL
+- Your site will be available at `https://<your-username>.github.io/<your-repo>/`.
