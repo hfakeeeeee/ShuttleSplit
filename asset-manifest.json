@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/ShuttleSplit/static/css/main.3c808ab4.css",
+    "main.js": "/ShuttleSplit/static/js/main.07a4839a.js",
+    "index.html": "/ShuttleSplit/index.html",
+    "main.3c808ab4.css.map": "/ShuttleSplit/static/css/main.3c808ab4.css.map",
+    "main.07a4839a.js.map": "/ShuttleSplit/static/js/main.07a4839a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3c808ab4.css",
+    "static/js/main.07a4839a.js"
+  ]
+}
