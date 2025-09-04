@@ -31,7 +31,7 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="shuttlecockPrice">Shuttlecock Price (per piece)</label>
+          <label htmlFor="shuttlecockPrice">Shuttlecock Price</label>
           <div className="input-wrapper">
             <span className="currency">₫</span>
             <input
