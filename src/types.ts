@@ -7,7 +7,7 @@ export interface Player {
 export interface Session {
   id: number;
   name: string;
-  date: string;
+  date?: string;
   participants: number[]; // Array of player IDs who joined this day
   additionalFee?: number; // Additional fee for this specific day
   waterFee?: number; // Water fee for this specific day
@@ -46,4 +46,20 @@ export interface SessionSettings {
   courtFee: number;
   shuttlecockPrice: number;
   shuttlecockCount: number;
+}
+
+// Firestore document wrappers
+export interface PlayerDoc {
+  id: string;
+  data: Player;
+}
+
+export interface SessionDoc {
+  id: string;
+  data: Session;
+}
+
+export interface SettingsDoc {
+  id: string;
+  data: AppSettings;
 }

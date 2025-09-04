@@ -2,6 +2,41 @@
 
 A modern, luxurious web application for calculating and managing badminton court fees among players. Perfect for badminton clubs and groups who need to split costs fairly.
 
+## Firebase Setup
+
+Create a Firebase project and enable Firestore (in native mode).
+
+Add a `.env` file in the project root with:
+
+```
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
+
+Restart the dev server after changing env variables.
+
+## Data Model
+- Collection `players`: documents keyed by numeric `id` as string. Data matches `Player` type.
+- Collection `sessions`: documents keyed by numeric `id` as string. Data matches `Session` type.
+- Document `meta/settings`: app-wide settings.
+
+## Development
+Install dependencies:
+
+```
+npm install
+```
+
+Run:
+
+```
+npm start
+```
+
 ## Features
 
 ### 🏸 Player Management

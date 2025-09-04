@@ -101,10 +101,13 @@ const Summary: React.FC<SummaryProps> = ({
             <div className="payment-method">
               <div className="payment-qr-large">
                 <img 
-                  src="/images/Bank.jpg" 
+                  src={`${process.env.PUBLIC_URL}/images/Bank.jpg`} 
                   alt="Bank Transfer" 
                   className="payment-qr-image" 
-                  onClick={() => handleImageClick("/images/Bank.jpg")}
+                  onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/images/Bank.jpg`)}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Bank.jpg`;
+                  }}
                 />
               </div>
             </div>
@@ -118,13 +121,16 @@ const Summary: React.FC<SummaryProps> = ({
                     alt="MoMo Transfer" 
                     className="payment-qr-image"
                     onClick={() => handleImageClick(settings.momoQRImage!)}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Momo.jpg`;
+                    }}
                   />
                 ) : (
                   <img 
-                    src="/images/Momo.jpg" 
+                    src={`${process.env.PUBLIC_URL}/images/Momo.jpg`} 
                     alt="MoMo Transfer" 
                     className="payment-qr-image" 
-                    onClick={() => handleImageClick("/images/Momo.jpg")}
+                    onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/images/Momo.jpg`)}
                   />
                 )}
               </div>
