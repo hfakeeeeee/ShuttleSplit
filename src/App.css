@@ -12,7 +12,8 @@
   --text-light: #94a3b8;
   --border-color: #e2e8f0;
   --bg-primary: #ffffff;
-  --surface-color: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --surface-color: #f9fafb;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -32,6 +33,7 @@
   --bg-primary: #0f172a;
   --surface-color: #1e293b;
   --secondary-color: #334155;
+  --bg-secondary: #111827;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
@@ -412,7 +414,6 @@ body {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
   gap: 1rem;
   align-items: end;
 }
@@ -455,7 +456,7 @@ input, select {
   border-radius: var(--radius-md);
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: white;
+  background: var(--surface-color);
   font-family: inherit;
 }
 
@@ -468,10 +469,11 @@ input:focus, select:focus {
 /* Button Styles */
 .btn {
   padding: 0.75rem 1.5rem;
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   font-weight: 500;
   font-size: 0.9rem;
+  line-height: 1;
   cursor: pointer;
   transition: all 0.3s ease;
   display: inline-flex;
@@ -646,7 +648,7 @@ input:focus, select:focus {
 }
 
 .cost-item {
-  background: white;
+  background: var(--surface-color);
   padding: 0.75rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
@@ -784,7 +786,7 @@ input:focus, select:focus {
 }
 
 .summary-card {
-  background: white;
+  background: var(--surface-color);
   padding: 1.5rem;
   border-radius: var(--radius-lg);
   border: 2px solid var(--border-color);
@@ -882,14 +884,14 @@ input:focus, select:focus {
 
 .qr-code-wrapper {
   padding: 1rem;
-  background: white;
+  background: var(--surface-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
 
 .qr-info {
   text-align: left;
-  background: white;
+  background: var(--surface-color);
   padding: 1.5rem;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -998,6 +1000,7 @@ input:focus, select:focus {
 .form-actions {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .add-player-form {
@@ -1247,7 +1250,7 @@ input:focus, select:focus {
 
 .momo-qr-container {
   padding: 1rem;
-  background: white;
+  background: var(--surface-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   margin-bottom: 1rem;
@@ -1261,7 +1264,7 @@ input:focus, select:focus {
 
 .bank-qr-container {
   padding: 1rem;
-  background: white;
+  background: var(--surface-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   margin-bottom: 1rem;
@@ -1269,7 +1272,7 @@ input:focus, select:focus {
 
 .payment-info {
   text-align: left;
-  background: white;
+  background: var(--surface-color);
   padding: 1.5rem;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -1715,7 +1718,7 @@ input:focus, select:focus {
 .cost-sheet {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--surface-color);
   font-size: 0.9rem;
   table-layout: fixed;
   display: table;
@@ -1840,23 +1843,23 @@ input:focus, select:focus {
 }
 
 /* Dark mode adjustments for sheet view */
-:root[data-theme="dark"] .cost-sheet {
+[data-theme="dark"] .cost-sheet {
   background: var(--bg-primary);
 }
 
-:root[data-theme="dark"] .cost-sheet th {
+[data-theme="dark"] .cost-sheet th {
   background: var(--bg-secondary);
 }
 
-:root[data-theme="dark"] .session-cell.participated {
+[data-theme="dark"] .session-cell.participated {
   background: rgba(34, 197, 94, 0.2);
 }
 
-:root[data-theme="dark"] .session-cell.not-participated {
+[data-theme="dark"] .session-cell.not-participated {
   background: rgba(107, 114, 128, 0.2);
 }
 
-:root[data-theme="dark"] .total-cell {
+[data-theme="dark"] .total-cell {
   background: rgba(37, 99, 235, 0.2);
 }
 
@@ -1934,7 +1937,7 @@ input:focus, select:focus {
 }
 
 .close-zoom-btn:hover {
-  background: white;
+  background: var(--surface-color);
   transform: scale(1.1);
 }
 
