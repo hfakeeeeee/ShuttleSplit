@@ -352,25 +352,53 @@ GOAL (EXACT LAYOUT):
 ## CRITICAL ICON USAGE REQUIREMENTS
 1. ALWAYS import EVERY icon used in a component at the top of the file:
    ```jsx
-   import { Home, Settings, Bell, User, Search, /* all other icons used */ } from 'lucide-react';
+   import { Home, Settings as SettingsIcon, Bell, User, Search, /* all other icons used */ } from 'lucide-react';
    ```
 2. NEVER reference icons that don't exist in the Lucide-React library
 3. VERIFY all icon imports against the Safe Icon Library list in this document
-4. CRITICAL: Create a central icons.js/ts utility file that imports and exports ALL icons used in the application
-5. DO NOT use dynamic icon imports - import explicitly
-6. ALL icon components must be properly rendered with consistent sizing
-7. NEVER use string names for icons - use the actual imported component
-8. Use appropriate icon colors - NOT all the same color
-9. Example of correct icon usage:
+4. CRITICAL: Create a central icons.js/ts utility file that imports and exports ALL required icons for the entire application:
+   ```jsx
+   // In src/utils/icons.jsx or icons.tsx
+   import { 
+     // Import ALL icons used anywhere in the application
+     Home, Search, Bell, User, Settings as SettingsIcon, Menu, Plus, Grid3x3, Layers,
+     Key, Globe, Database, HardDrive, Monitor, Wifi, Activity, Tag, Folder, BookOpen,
+     Shield, DollarSign, ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp,
+     Mail, BarChart2, /* Add any other icons used anywhere */
+   } from 'lucide-react';
+   
+   // Re-export all icons
+   export {
+     Home, Search, Bell, User, SettingsIcon, Menu, Plus, Grid3x3, Layers,
+     Key, Globe, Database, HardDrive, Monitor, Wifi, Activity, Tag, Folder, BookOpen,
+     Shield, DollarSign, ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp,
+     Mail, BarChart2, /* Add any other icons used anywhere */
+   };
+   ```
+5. IMPORTANT: ALWAYS rename the Settings icon to SettingsIcon to avoid conflicts with the Settings component:
+   ```jsx
+   // In any component file
+   import { Settings as SettingsIcon } from 'lucide-react';
+   // Or from the centralized icons file
+   import { SettingsIcon } from '../utils/icons';
+   ```
+6. DO NOT use dynamic icon imports - import explicitly
+7. ALL icon components must be properly rendered with consistent sizing
+8. NEVER use string names for icons - use the actual imported component
+9. Use appropriate icon colors - NOT all the same color
+10. SCAN ALL COMPONENTS to ensure every icon used is properly imported
+11. Example of correct icon usage:
    ```jsx
    // At top of file
-   import { Home, Settings, Bell } from 'lucide-react';
+   import { Home, Settings as SettingsIcon, Bell } from 'lucide-react';
+   // Or from centralized icons file
+   import { Home, SettingsIcon, Bell } from '../utils/icons';
    
    // In component
    return (
      <div>
        <Home className="text-blue-500" />
-       <Settings className="text-gray-700" />
+       <SettingsIcon className="text-gray-700" /> {/* Note the renamed SettingsIcon */}
        <Bell className="text-yellow-500" />
      </div>
    );
@@ -403,16 +431,22 @@ Use **only** these verified icons:
 - Actions: Edit, Trash2, Download, Upload, Copy, Share, Save, Refresh, Play, Pause  
 - Communication: Mail, MessageSquare, Phone, Video, Mic, MicOff
 - AI/ML Specific: Brain, Search, Camera, FileText, Play
-- Additional icons: BarChart2, DollarSign, BookOpen
+- Additional icons: BarChart2, DollarSign, BookOpen, HelpCircle, QuestionMark
 
 **CRITICAL ICON USAGE RULES**:
 1. **ALWAYS verify** each icon exists in this list before using it
 2. **NEVER use icons** outside this list - if unsure, fallback to Circle, Square, or Settings
 3. **IMPORT ALL ICONS** used in a component explicitly at the top of the file
 4. **CENTRALIZE ICON IMPORTS** in src/utils/icons.{main_ext} for consistency
-5. **VARY ICON COLORS** - use different colors for different icons for better visual hierarchy
-6. **CONSISTENT SIZING** - use consistent icon sizing within sections (e.g., 18px for nav, 24px for main content)
-7. **TEST ALL ICONS** to verify they render correctly
+5. **CHECK ENTIRE CODEBASE** to ensure every icon used in ANY component is imported in the central icons file
+6. **RENAME SETTINGS ICON** to SettingsIcon everywhere to avoid conflicts with Settings component
+7. **VARY ICON COLORS** - use different colors for different icons for better visual hierarchy
+8. **CONSISTENT SIZING** - use consistent icon sizing within sections (e.g., 18px for nav, 24px for main content)
+9. **TEST ALL ICONS** to verify they render correctly
+10. **SCAN FOR MAIL ICON** and ensure it's properly imported whenever used
+11. If an icon appears to be missing from this list but is needed for implementation, use one of these alternatives:
+   - For Help icon: HelpCircle or QuestionMark 
+   - For BadgeHelp icon: Use HelpCircle with a custom badge styling
 
 ## TECH STACK (DYNAMIC BASED ON INPUT):
 - Core: react@^18.2.0, react-dom@^18.2.0, react-router-dom@^6.15.0
@@ -446,6 +480,25 @@ Return ONLY valid JSON with properly escaped strings:
     "src/components/pages/Help.{main_ext}": "Help page with proper layout, AI will fully generated content",
     "src/components/pages/Settings.{main_ext}": "Service page with proper layout, AI will fully generated content",
     "Create remaining files based on portal structure": "Create additional files for comprehensive portal structure including but not limited to:
+      - src/utils/icons.{main_ext}: Utility file that imports and exports ALL icons used throughout the application, with Settings renamed to SettingsIcon to avoid conflicts:
+          ```jsx
+          // src/utils/icons.jsx
+          import { 
+            Home, Bell, Search, Grid3x3, Settings as SettingsIcon, Menu, User, 
+            Plus, Layers, Key, Globe, Database, HardDrive, Monitor, Wifi, 
+            Activity, Tag, Folder, BarChart2, BookOpen, Shield, DollarSign, 
+            ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp, Mail,
+            /* Include ALL other icons used in the application */
+          } from 'lucide-react';
+          
+          export {
+            Home, Bell, Search, Grid3x3, SettingsIcon, Menu, User, 
+            Plus, Layers, Key, Globe, Database, HardDrive, Monitor, Wifi, 
+            Activity, Tag, Folder, BarChart2, BookOpen, Shield, DollarSign,
+            ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp, Mail,
+            /* Include ALL other icons used in the application */
+          };
+          ```
       - src/components/common/ServiceCard.{main_ext}: Reusable service card component with proper styling and hover effects
       - src/components/dashboard/ResourceTable.{main_ext}: Properly structured table with fixed columns (Name 40%, Type 30%, Last Viewed 30%), equal-width columns and proper row alignment
       - src/components/dashboard/ServicesStrip.{main_ext}: Horizontal services strip component
@@ -458,7 +511,6 @@ Return ONLY valid JSON with properly escaped strings:
       - src/components/services/CategorySection.{main_ext}: Expandable category section component
       - src/components/pages/Notifications.{main_ext}: Notifications page with proper layout
       - src/components/pages/Dashboard.{main_ext}: Main dashboard page that properly imports and uses all dashboard components
-      - src/utils/icons.{main_ext}: Utility file that properly imports and exports ALL required icons for the entire application
       - Any other files necessary to create a complete portal experience"
   }
 }
