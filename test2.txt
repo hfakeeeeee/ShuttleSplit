@@ -1,16 +1,25 @@
 Create an Azure-Portal Vue application for: {instructions}
 
 GOAL (EXACT LAYOUT):
-- Build a pixel-accurate of the Azure Portal interface
+- Build a pixel-accurate Layout Rules (Critical)
+- No overlay: Sidebar never overlays main content
+- Proper margins: Always equal to sidebar width
+- Responsive: Adjust margin when collapsed
+- Z-index layers: Header (50), Sidebar (40), Main (10)
+- Content flow: Vertical alignment, consistent spacing
+- **HEADER POSITIONING**: 
+  - TopBar uses position: fixed with width: 100%
+  - Main content must have padding-top: 48px (exact header height)
+  - Dashboard sections must start below headersentation of the Azure Portal interface
 - Brand-neutral but maintain the exact visual hierarchy and spacing
-- Fixed layout dimensions where needed, AI-generated content within those constraints
+- Fixed header and sidebar dimensions, with flexible content areas
 
 ## A. Top Header Bar (Fixed Height: 48px)
 - Left: Hamburger menu (collapse sidebar), Brand logo, when click to logo route to /
 - Center: Global search bar with placeholder "Search resources, services, and docs (G+/)"
   - Search bar ALWAYS centered
   - Minimum width: 580px
-- Right: Notification bell, settings gear, BadgeHelp icon, user profile
+- Right: Notification bell, settings gear, help icon, user profile
   - ALL must link to actual routes
 - Background:
   - If {instructions} provide header color, use it
@@ -22,43 +31,38 @@ GOAL (EXACT LAYOUT):
   - Subtle box-shadow: 0 2px 4px rgba(0,0,0,0.1)
   - Main content MUST start with padding-top: 48px to prevent overlay
 - **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
+  - Use basic icons (Menu, Search, Bell, Settings, HelpCircle, User)
 
 ## B. Left Sidebar (Fixed Width: 220px expanded, 48px collapsed)
 - **Primary Actions Section**
   - Create a resource (Plus icon)
   - Home (Home icon)
   - Dashboard (BarChart2 icon)
-  - All services (Grid3x3 icon) - **Links to /services**
+  - All services (Grid icon) - **Links to /services**
 
 - **Favorites Section** (collapsible group header)
   Default example items if {instructions} do not provide favorites:
   - Create a resource (Plus icon)
   - All resources (Layers icon)
-  - Key vaults (Key icon)
+  - Resource groups (Folder icon)
   - App Services (Globe icon)
-  - SQL databases (Database icon)
-  - Storage accounts (HardDrive icon)
-  - Virtual machines (Monitor icon)
-  - Virtual networks (Wifi icon)
-  - Monitor (Activity icon)
-  - [More items…]
+  - Key vault (Key icon)
+  - Storage accounts (Database icon)
 
 - Behavior:
   - Full viewport height
   - Independent scroll
   - White background
-  - **CRITICAL**: Collapsed sections must NOT overlay other sidebar content, All collapsible sections must use proper overflow handling, Collapsible sections must use height transition, not position changes
+  - **CRITICAL**: Collapsed sections must NOT overlay other sidebar content, All collapsible sections must use proper overflow handling
 - **Critical Z-Index**: Sidebar (40), must NOT overlay main content
 - **Critical Overflow Handling**:
   - Sidebar must use overflow-y: auto for scrolling
   - Favorites section must maintain sidebar width when collapsed/expanded, Favorites text must disappear when collapsed
-  - When collapsed, all icons must be centered by align middle and align center INCLUDE Favorites icon
+  - When collapsed, all icons must be centered by align middle and align center
 - **Critical Navigation**:
   - All links must link to actual routes
 - **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-  - Icon color: All icons must be colored, using multiple colors, not using same color for all icons
+  - Use a limited set of essential icons (Plus, Home, BarChart2, Grid, Layers, Folder, Globe, Key, Database)
 
 ## C. Main Content Area
 - **DEFAULT LAYOUT** IF {instructions} DO NOT PROVIDE MAIN CONTENT:
@@ -76,208 +80,29 @@ GOAL (EXACT LAYOUT):
   - Main wrapper: min-height: calc(100vh - 48px) to account for header
   - Content area: flex-1, display: flex, flex-direction: column
 
-## D. Dashboard Page - Services Strip (Compact Layout)
-- Critical Spacing:
-  - **MANDATORY**: Must render below header (at least 48px from top of viewport)
-  - First section padding-top: 24px (in addition to the 48px header offset)
-  - No header overlay under any circumstances
-- Section Title: "Azure services" (24px font, bold)
-- Service Tiles default example if {instructions} do not provide services:
-  - Create a resource (Plus icon)
-  - All resources (Layers icon)
-  - Key vaults (Key icon)
-  - Storage accounts (HardDrive icon)
-  - More services (ArrowRight icon) - **Links to /services**
-- Tile Dimensions: Compact, padded
-- Grid Distribution:
-  - Spread evenly, width 100%
-  - No max-width per tile
-  - All tile must be on ONLY one row
-  - Always having margin-top: 48px 
-- Icon color: All icons must be colored, using multiple colors, not using same color for all icons
-- **CRITICAL POSITIONING**:
-  - Must use relative positioning
-  - Must appear below fixed header
-  - Use top margin if needed to prevent any header overlap
-  - If {instructions} provide services, MUST FOLLOW EXACTLY SERVICE IN THAT {instructions}
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
+## D. Dashboard Page - Content Sections
+- Content sections should appear below the fixed header
+- Always include padding-top: 24px (after the 48px header offset)
+- Each section should have appropriate spacing between them
+- Use appropriate heading levels for section titles
+- Main dashboard content should be organized in a clear visual hierarchy
+- Use standard design patterns for displaying information
+- If {instructions} provide specific dashboard content, follow those requirements
 
-## E. Dashboard Page - Resources Table Section
-- Section Title: "Resources" (24px font, bold)
-- Tabs: "Recent" (active), "Favorite"
-- Table Structure:
-  - **MUST USE PROPER HTML TABLE STRUCTURE with <table>, <thead>, <tbody>, <tr>, <th>, and <td> elements**
-  - Columns: Name (40%), Type (30%), Last Viewed (30%)
-  - **CRITICAL**: Each column must maintain its exact width percentage using :class="'w-[40%]'" style format
-  - **CRITICAL**: Text alignment must be consistent - Name (left), Type (left), Last Viewed (right)
-  - Content alignment: items-center, align-middle
-  - Fixed row height: 40px
-  - **NEVER use flex layout for table rows** - this breaks column alignment
-  - Use proper table border-collapse and border-spacing properties
-  - **MUST include <th> headers with proper scope attributes**
-- Sample Rows (10–12 visible):
-  - chpSemanticSearchOpenGen | Search service | 17h ago
-  - chpSearchOne | Storage account | 2 days ago
-  - chp-search-east-npe-0 | Azure OpenAI | 3 weeks ago
-  - chp-search-east-npe-0-pe | Private endpoint | 3 weeks ago
-  - chp-ptsp-mgmts-e2-dev-kv | Key vault | 3 weeks ago
-  - [More rows…]
-- "See all" link at bottom
-- Alternating row background (white/light gray)
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-  - Table must render with proper column widths and alignment in all viewport sizes
+## Content Section Guidelines
+- Use proper semantic HTML for all elements
+- When displaying tabular data, use proper HTML table structure
+- Use consistent spacing and alignment throughout
+- Ensure all content is visible without overlapping
+- Apply appropriate styling for interactive elements like buttons and links
+- Create a responsive layout that adjusts to different screen sizes
 
-## F. Dashboard Page - Navigate Section
-- Section Title: "Navigate" (24px font, bold)
-- Navigation Tiles (4 tiles in a row), default example if {instructions} do not provide navigation:
-  - Subscriptions (Tag icon)
-  - Resource groups (Folder icon) 
-  - All resources (Grid3x3 icon)
-  - Dashboard (BarChart2 icon)
-- Tile Layout: 4 columns in a single row, equal width distribution
-- All must link to actual routes
-- Layout: Full width row, standalone section, all icon and text centered content with items-center, align-middle
-- Icon color: All icons must be colored, using multiple colors, not using same color for all icons
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-
-## G. Dashboard Page - Tools Section  
-- Section Title: "Tools" (24px font, bold)
-- Tool Tiles (4 tiles in a row), default example if {instructions} do not provide tools:
-  - Microsoft Learn (BookOpen icon)
-  - Azure Monitor (Activity icon)
-  - Microsoft Defender for Cloud (Shield icon)
-  - Cost Management (DollarSign icon)
-- Tile Layout: 4 columns in a single row, with title + subtitle text
-- All must link to actual routes and have subtitle
-- Layout: Full width row, standalone section, all icon and text centered content with items-center, align-middle
-- Icon color: All icons must be colored, using multiple colors, not using same color for all icons
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-
-## H. Dashboard Page - Useful Links Section
-- Section Title: "Useful links" (24px font, bold), default example if {instructions} do not provide useful links:
-- Links arranged in 2 rows, multiple cols:
-  - Technical Documentation (ExternalLink icon), Azure Migration Tools (ArrowRight icon), Azure Services (ExternalLink icon), Find an Azure expert (ExternalLink icon)
-  - Additional as needed: Recent Azure Updates, Quickstart Center
-- Layout: Takes left portion of flex container with flex-1
-- Icons: Icons with links
-- Spacing: Compact vertical spacing between rows
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-
-## I. Dashboard Page - Azure Mobile App Section
-- Section Title: "Azure mobile app" (24px font, bold), default example if {instructions} do not provide mobile app:
-- Content: App store badges (placeholder images/buttons)
-- Layout: Takes right portion of flex container with flex-1
-- Display: Vertical stack - title, subtitle, then horizontal buttons
-- Buttons: "App Store" and "Google Play" side by side
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-
-## J. All Services Page Layout (/services)
-
-### J1. Page Header
-- Title: "All services" (32px font, bold, #323130)
+## All Services Page Layout (/services)
+- Title: "All services"
 - Breadcrumb: Home > All services
-- Always having margin-top: 48px 
-- **IMPORTANT**:
-  - All icons are used NEED TO BE IMPORTED in files
-
-### J2. Filter Controls Bar
-- Left side filter categories (vertical sidebar within main content):
-  - **Filter Sidebar (Width: 180px)**
-    - "All" (active by default)
-    - "Favorites" 
-    - "Recents"
-    - "Recommended for you"
-  - **Categories Section** (collapsible), example if {instructions} do not provide categories:
-    - AI + machine learning
-    - Analytics
-    - Compute
-    - Containers
-    - Databases
-    - DevOps
-    - Internet of Things
-    - Management and governance
-    - Monitor
-    - Networking
-
-### J3. Top Controls Bar (Above service grid)
-- Left: Search input "Filter services" with search icon
-- Center: Service providers dropdown "Service providers: All"
-  - **CRITICAL**: Dropdown must have proper text/arrow spacing
-  - Text must not overlap with dropdown arrow
-  - Minimum 16px padding between text and arrow
-  - Use text-overflow: ellipsis for long text values
-- Center-Right: Release Status dropdown "Release Status: All"
-  - **CRITICAL**: Same spacing requirements as above
-  - Arrow position must be fixed relative to right edge
-  - Text container must handle overflow properly
-- Right: Detail view toggle (toggle switch, default ON)
-
-#### Dropdown Component Styling (CRITICAL)
-- All dropdowns must use position: relative for container
-- Dropdown arrow must use position: absolute, right: 8px
-- Text must have padding-right to avoid arrow overlap (at least 24px)
-- Dropdown width must be sufficient to accommodate contents
-- Must handle text overflow with ellipsis
-- Use flexbox with space-between for dropdown content layout
-
-### J4. Featured Services Strip (Top of main area)
-- Horizontal scrolling strip with popular services
-- Service icons: Microsoft Entra ID, Virtual machines, Resource groups, App Services, Storage accounts, Cost Management, Virtual networks
-- Each with colored icon and service name below
-- White background cards with subtle border
-
-### J5. Category Section Headers
-- **AI + machine learning** - Expandable/collapsible
-- Shows count of services in parentheses
-- Chevron icon for expand/collapse state
-
-### J6. Service Cards Grid (3 columns)
-- **Service Card Structure:**
-  - Service icon
-  - Service name
-  - Description text
-  - Star icon (top-right, for favorites)
-  - "Create" and "View" buttons at bottom
-  - Card dimensions: about 400px width, about 180px height
-  - White background, subtle border (#e1e9eb)
-  - Hover effect: slight shadow and border highlight
-
-### J7. Grid Layout Rules
-- 3-column grid with consistent gaps
-- Cards maintain aspect ratio
-- Responsive: Adjusts to 2 columns on medium screens, 1 column on mobile
-- Even spacing between cards and rows
-- Proper alignment within category sections
-
-### J8. Category Expansion Behavior
-- Categories can be collapsed to show only header
-- Expanded categories show full grid of service cards
-- Smooth animation for expand/collapse
-- Maintain scroll position during state changes
-
-## Bottom Row Container Layout (Dashboard only):
-- Container: Use flexbox with gap-8 or gap-12 (moderate spacing)
-- Structure: `<div class="flex gap-8">` containing both sections
-- Useful Links: `<div class="flex-1">` (takes available space)
-- Mobile App: `<div class="flex-1">` (takes equal space)
-- Total spacing: Reasonable gap, not too wide apart
-
-## Additional Styling:
-- Both sections should have consistent top alignment
-- Section titles at same baseline level
-- Use flex gap instead of margin/padding for cleaner spacing
-- Maximum container width to prevent over-stretching on large screens
-
-## Layout Structure Clarification:
-- Navigate Section: Full width standalone row
-- Tools Section: Full width standalone row  
-- Bottom Row: Useful Links (70% width) + Azure Mobile App (30% width) side by side
+- Always include margin-top: 48px to clear the fixed header
+- Include appropriate filtering and search functionality
+- Organize services in a grid or list layout based on {instructions}
 
 ## Fixed Dimensions & Spacing
 - Header height: 48px (z-index: 50)
@@ -285,7 +110,6 @@ GOAL (EXACT LAYOUT):
 - Main content margin: 220px (expanded), 48px (collapsed)
 - Content padding: 24px horizontal
 - Section vertical spacing: 24px
-- Table row height: 40px
 
 ## Layout Rules (Critical)
 - No overlay: Sidebar never overlays main content
@@ -349,72 +173,52 @@ GOAL (EXACT LAYOUT):
   --card-shadow-hover: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-## CRITICAL ICON USAGE REQUIREMENTS
-1. ALWAYS import EVERY icon used in a component at the top of the file:
+## SIMPLIFIED ICON USAGE
+1. Import only the icons you need in each component:
    ```vue
    <script setup>
-   import { Home, Settings as SettingsIcon, Bell, User, Search /* all other icons used */ } from 'lucide-vue-next';
+   import { Home, Settings as SettingsIcon, Bell, User, Search } from 'lucide-vue-next';
    </script>
    ```
-2. NEVER reference icons that don't exist in the Lucide-Vue-Next library
-3. VERIFY all icon imports against the Safe Icon Library list in this document
-4. CRITICAL: Create a central icons.js/ts utility file that imports and exports ALL required icons for the entire application:
-   ```js
-   // In src/utils/icons.js or icons.ts
-   import { 
-     // Import ALL icons used anywhere in the application
-     Home, Search, Bell, User, Settings as SettingsIcon, Menu, Plus, Grid3x3, Layers,
-     Key, Globe, Database, HardDrive, Monitor, Wifi, Activity, Tag, Folder, BookOpen,
-     Shield, DollarSign, ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp,
-     Mail, BarChart2, /* Add any other icons used anywhere */
-   } from 'lucide-vue-next';
+2. Focus on essential icons for the header and sidebar:
+   ```vue
+   <script setup>
+   // Essential icons for header
+   import { Menu, Search, Bell, Settings as SettingsIcon, HelpCircle, User } from 'lucide-vue-next';
    
-   // Re-export all icons
-   export {
-     Home, Search, Bell, User, SettingsIcon, Menu, Plus, Grid3x3, Layers,
-     Key, Globe, Database, HardDrive, Monitor, Wifi, Activity, Tag, Folder, BookOpen,
-     Shield, DollarSign, ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp,
-     Mail, BarChart2, /* Add any other icons used anywhere */
-   };
+   // Essential icons for sidebar
+   import { Home, Plus, BarChart2, Grid, Layers, Folder, Globe, Key, Database } from 'lucide-vue-next';
+   </script>
    ```
-5. IMPORTANT: ALWAYS rename the Settings icon to SettingsIcon to avoid conflicts with the Settings component:
+3. Always rename the Settings icon to SettingsIcon to avoid conflicts:
    ```vue
    <script setup>
    import { Settings as SettingsIcon } from 'lucide-vue-next';
-   // Or from the centralized icons file
-   import { SettingsIcon } from '@/utils/icons';
    </script>
    ```
-6. DO NOT use dynamic icon imports - import explicitly
-7. ALL icon components must be properly rendered with consistent sizing
-8. NEVER use string names for icons - use the actual imported component
-9. Use appropriate icon colors - NOT all the same color
-10. SCAN ALL COMPONENTS to ensure every icon used is properly imported
-11. Example of correct icon usage:
-   ```vue
-   <template>
-     <div>
-       <Home class="text-blue-500" />
-       <SettingsIcon class="text-gray-700" /> <!-- Note the renamed SettingsIcon -->
-       <Bell class="text-yellow-500" />
-     </div>
-   </template>
+4. Use a central utility file only for the most common icons:
+   ```js
+   // In src/utils/icons.js or icons.ts
+   import { 
+     // Essential header icons
+     Menu, Search, Bell, Settings as SettingsIcon, HelpCircle, User,
+     // Essential sidebar icons
+     Home, Plus, BarChart2, Grid, Layers, Folder, Globe, Key, Database,
+     // Essential UI icons
+     ChevronDown, ChevronUp, ArrowRight
+   } from 'lucide-vue-next';
    
-   <script setup>
-   import { Home, Settings as SettingsIcon, Bell } from 'lucide-vue-next';
-   // Or from centralized icons file
-   // import { Home, SettingsIcon, Bell } from '@/utils/icons';
-   </script>
+   // Re-export only essential icons
+   export {
+     Menu, Search, Bell, SettingsIcon, HelpCircle, User,
+     Home, Plus, BarChart2, Grid, Layers, Folder, Globe, Key, Database,
+     ChevronDown, ChevronUp, ArrowRight
+   };
    ```
 
 ## Behavior Requirements
 - Sidebar collapse toggles width + adjusts main margin
-- Search functionality: Global search w/ debounce + services page filter
-- Service cards: "Create" and "View" buttons with proper routing
-- Category collapse/expand with smooth animations
-- Filter sidebar selection updates main grid
-- Service providers and release status filtering
-- Detail view toggle affects card layout density
+- Search functionality in header
 - Header nav routes:
   - Bell → /notifications
   - Settings → /settings  
@@ -422,34 +226,11 @@ GOAL (EXACT LAYOUT):
   - Help → /help
 - Layout integrity: Content never overlaps sidebar
 
-## Safe Icon Library (Lucide-Vue-Next only)
-Use **only** these verified icons:
-- Basic Actions: Plus, Minus, X, Check, Search, Settings, Menu, MoreHorizontal, ArrowRight, ArrowLeft, ChevronDown, ChevronUp, Smartphone
-- Navigation: Home, ChevronLeft, ChevronRight, ExternalLink  
-- Files & Data: Database, HardDrive, Folder, FolderOpen, File, FileText, Archive, Package  
-- Users & Security: User, Users, Shield, Lock, Key, Eye, EyeOff  
-- Network & Cloud: Globe, Wifi, Cloud, Server, Monitor, Smartphone, Tablet  
-- Interface: Bell, Star, Heart, Bookmark, Tag, Clock, Calendar, Grid3x3, Layers  
-- Status: AlertCircle, CheckCircle, XCircle, Info, Lightbulb, Zap, Activity, TrendingUp  
-- Actions: Edit, Trash2, Download, Upload, Copy, Share, Save, Refresh, Play, Pause  
-- Communication: Mail, MessageSquare, Phone, Video, Mic, MicOff
-- AI/ML Specific: Brain, Search, Camera, FileText, Play
-- Additional icons: BarChart2, DollarSign, BookOpen, HelpCircle, QuestionMark
-
-**CRITICAL ICON USAGE RULES**:
-1. **ALWAYS verify** each icon exists in this list before using it
-2. **NEVER use icons** outside this list - if unsure, fallback to Circle, Square, or Settings
-3. **IMPORT ALL ICONS** used in a component explicitly in the script setup section
-4. **CENTRALIZE ICON IMPORTS** in src/utils/icons.js for consistency
-5. **CHECK ENTIRE CODEBASE** to ensure every icon used in ANY component is imported in the central icons file
-6. **RENAME SETTINGS ICON** to SettingsIcon everywhere to avoid conflicts with Settings component
-7. **VARY ICON COLORS** - use different colors for different icons for better visual hierarchy
-8. **CONSISTENT SIZING** - use consistent icon sizing within sections (e.g., 18px for nav, 24px for main content)
-9. **TEST ALL ICONS** to verify they render correctly
-10. **SCAN FOR MAIL ICON** and ensure it's properly imported whenever used
-11. If an icon appears to be missing from this list but is needed for implementation, use one of these alternatives:
-   - For Help icon: HelpCircle or QuestionMark 
-   - For BadgeHelp icon: Use HelpCircle with a custom badge styling
+## Recommended Icon List (Simplified)
+Only use these essential icons:
+- Header: Menu, Search, Bell, SettingsIcon, HelpCircle, User
+- Sidebar: Home, Plus, BarChart2, Grid, Layers, Folder, Globe, Key, Database
+- UI Controls: ChevronDown, ChevronUp, ArrowRight
 
 ## TECH STACK (DYNAMIC BASED ON INPUT):
 - Core: vue@^3.3.0, vue-router@^4.2.0, pinia@^2.1.0
@@ -478,46 +259,12 @@ Return ONLY valid JSON with properly escaped strings:
     "src/components/navigation/TopBar.vue": "Blue gradient header with position: fixed, width: 100%, top: 0, left: 0, z-index: 50, height: 48px, box-shadow for subtle depth",
     "src/components/navigation/Sidebar.vue": "Fixed width, limited favorites, proper z-index: 40, NO content overlay, height: 100vh, position: fixed",
     "src/views/NotFound.vue": "404 page with proper layout",
-    "src/views/Profile.vue": "Profile page with proper layout, AI will fully generated content",
-    "src/views/AllServices.vue": "All Services page with proper layout, AI will fully generated content",
-    "src/views/Help.vue": "Help page with proper layout, AI will fully generated content",
-    "src/views/Settings.vue": "Service page with proper layout, AI will fully generated content",
-    "Create remaining files based on portal structure": "Create additional files for comprehensive portal structure including but not limited to:
-      - src/utils/icons.js: Utility file that imports and exports ALL icons used throughout the application, with Settings renamed to SettingsIcon to avoid conflicts:
-          ```js
-          // src/utils/icons.js
-          import { 
-            Home, Bell, Search, Grid3x3, Settings as SettingsIcon, Menu, User, 
-            Plus, Layers, Key, Globe, Database, HardDrive, Monitor, Wifi, 
-            Activity, Tag, Folder, BarChart2, BookOpen, Shield, DollarSign, 
-            ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp, Mail,
-            /* Include ALL other icons used in the application */
-          } from 'lucide-vue-next';
-          
-          export {
-            Home, Bell, Search, Grid3x3, SettingsIcon, Menu, User, 
-            Plus, Layers, Key, Globe, Database, HardDrive, Monitor, Wifi, 
-            Activity, Tag, Folder, BarChart2, BookOpen, Shield, DollarSign,
-            ExternalLink, ArrowRight, Star, ChevronDown, ChevronUp, Mail,
-            /* Include ALL other icons used in the application */
-          };
-          ```
-      - src/components/common/ServiceCard.vue: Reusable service card component with proper styling and hover effects
-      - src/components/dashboard/ResourceTable.vue: Properly structured table with fixed columns (Name 40%, Type 30%, Last Viewed 30%), equal-width columns and proper row alignment
-      - src/components/dashboard/ServicesStrip.vue: Horizontal services strip component
-      - src/components/dashboard/NavigateSection.vue: Navigation tiles section component
-      - src/components/dashboard/ToolsSection.vue: Tools tiles section component
-      - src/components/dashboard/UsefulLinks.vue: Useful links section component
-      - src/components/dashboard/MobileApp.vue: Mobile app section component
-      - src/components/common/Breadcrumb.vue: Reusable breadcrumb component
-      - src/components/common/FilterSidebar.vue: Filter categories sidebar component
-      - src/components/services/CategorySection.vue: Expandable category section component
-      - src/views/Notifications.vue: Notifications page with proper layout
-      - src/views/Dashboard.vue: Main dashboard page that properly imports and uses all dashboard components
-      - src/router/index.js: Vue Router configuration with all routes defined
-      - src/stores/sidebarStore.js: Pinia store for sidebar collapsed state
-      - src/stores/serviceStore.js: Pinia store for service data and filtering
-      - Any other files necessary to create a complete portal experience"
+    "src/views/Dashboard.vue": "Dashboard page with content areas",
+    "src/views/Profile.vue": "Profile page with proper layout",
+    "src/views/AllServices.vue": "All Services page with proper layout",
+    "src/views/Help.vue": "Help page with proper layout",
+    "src/views/Settings.vue": "Settings page with proper layout",
+    "src/utils/icons.js": "Utility file for essential icons (header and sidebar only)"
   }
 }
 
@@ -529,18 +276,11 @@ Return ONLY valid JSON with properly escaped strings:
 - Proper Z-Index: Header (50), Sidebar (40), Content (10) with NO overlaps
 - Responsive Margins: Main content margin adjusts when sidebar expands/collapses
 - Consistent Layout: Sections spaced uniformly, no overlaps
-- Service Cards: Proper grid layout with consistent dimensions
-- Category Management: Smooth expand/collapse with state persistence
-- Search & Filter: Real-time filtering across categories
-- Navigation: All service tiles and buttons must route correctly
+- Navigation: All links must route correctly
 - /services must render complete AllServices page
-- No dot list in Header and Sidebar
-- Ensure all icons are imported in all components
+- Use only essential icons for header and sidebar
 - TABLE STRUCTURE: Always use proper HTML <table> elements for tabular data, never flexbox
 - COMPONENT MODULARITY: Create small, reusable components for recurring UI elements
-- FILE GENERATION: Create ALL necessary files for a complete application (not just the ones explicitly listed)
-- UNIQUE CONTENT: Each generated file must have unique, appropriate content - no duplicate placeholders
-- COMPLETE IMPLEMENTATION: Fully implement all features described in this specification
 
 ## CRITICAL FILE STRUCTURE RULES
 1. File structure MUST be consistent and correct for Vue components:
@@ -562,7 +302,3 @@ Return ONLY valid JSON with properly escaped strings:
    - import { useStore } from 'pinia';
 6. DON'T USE option API, always use composition API with script setup
 7. UTILITIES FILE: MUST use proper import/export syntax
-8. NEVER USE \n, instead just enter a new line
-9. All icons must be colored, using multiple colors, not using same color for all icons
-10. ENSURE that all sections are aligned properly
-11. All components should use defineProps and defineEmits when handling props and events
