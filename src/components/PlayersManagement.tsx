@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Player } from '../types';
+import CollapsibleSection from './CollapsibleSection';
 
 interface PlayersManagementProps {
   players: Player[];
@@ -52,80 +53,93 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
     }
   };
 
+  const renderHeader = () => (
+    <div className="section-header">
+      <h2><i className="fas fa-users"></i> Players Management</h2>
+      <button className="btn btn-primary" onClick={handleAddPlayer}>
+        <i className="fas fa-user-plus"></i> Add Player
+      </button>
+    </div>
+  );
+
   return (
-    <section className="card players-section">
-      <div className="section-header">
-        <h2><i className="fas fa-users"></i> Players Management</h2>
-        <button className="btn btn-primary" onClick={handleAddPlayer}>
+    <CollapsibleSection
+      title="Players Management"
+      icon="fas fa-users"
+      className="players-section"
+      defaultExpanded={true}
+    >
+      <div>
+        <button className="btn btn-primary" onClick={handleAddPlayer} style={{ marginBottom: '1rem' }}>
           <i className="fas fa-user-plus"></i> Add Player
         </button>
-      </div>
-      
-      {showAddForm && (
-        <div className="add-player-form fade-in">
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="playerName">Player Name</label>
-              <input
-                type="text"
-                id="playerName"
-                placeholder="Enter player name"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                autoFocus
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="playerType">Player Type</label>
-              <select
-                id="playerType"
-                value={playerType}
-                onChange={(e) => setPlayerType(e.target.value as 'fixed' | 'transient')}
-              >
-                <option value="fixed">Fixed Registration</option>
-                <option value="transient">Transient (+10,000₫)</option>
-              </select>
-            </div>
-            <div className="form-actions">
-              <button className="btn btn-success" onClick={handleSavePlayer}>
-                <i className="fas fa-check"></i> Save
-              </button>
-              <button className="btn btn-secondary" onClick={handleCancelAdd}>
-                <i className="fas fa-times"></i> Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="players-list">
-        {players.length === 0 ? (
-          <div className="empty-state">
-            <i className="fas fa-user-plus"></i>
-            <p>No players added yet. Click "Add Player" to get started.</p>
-          </div>
-        ) : (
-          players.map(player => (
-            <div key={player.id} className="player-card slide-in">
-              <div className="player-info">
-                <div className="player-name">{player.name}</div>
-                <div className={`player-type ${player.type}`}>
-                  {player.type === 'fixed' ? 'Fixed Registration' : 'Transient (+10,000₫)'}
-                </div>
+        
+        {showAddForm && (
+          <div className="add-player-form fade-in">
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="playerName">Player Name</label>
+                <input
+                  type="text"
+                  id="playerName"
+                  placeholder="Enter player name"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  autoFocus
+                />
               </div>
-              <div className="player-actions">
-                <button 
-                  className="btn btn-danger btn-sm" 
-                  onClick={() => handleRemovePlayer(player.id, player.name)}
+              <div className="form-group">
+                <label htmlFor="playerType">Player Type</label>
+                <select
+                  id="playerType"
+                  value={playerType}
+                  onChange={(e) => setPlayerType(e.target.value as 'fixed' | 'transient')}
                 >
-                  <i className="fas fa-trash"></i>
+                  <option value="fixed">Fixed Registration</option>
+                  <option value="transient">Transient (+10,000₫)</option>
+                </select>
+              </div>
+              <div className="form-actions">
+                <button className="btn btn-success" onClick={handleSavePlayer}>
+                  <i className="fas fa-check"></i> Save
+                </button>
+                <button className="btn btn-secondary" onClick={handleCancelAdd}>
+                  <i className="fas fa-times"></i> Cancel
                 </button>
               </div>
             </div>
-          ))
+          </div>
         )}
+
+        <div className="players-list">
+          {players.length === 0 ? (
+            <div className="empty-state">
+              <i className="fas fa-user-plus"></i>
+              <p>No players added yet. Click "Add Player" to get started.</p>
+            </div>
+          ) : (
+            players.map(player => (
+              <div key={player.id} className="player-card slide-in">
+                <div className="player-info">
+                  <div className="player-name">{player.name}</div>
+                  <div className={`player-type ${player.type}`}>
+                    {player.type === 'fixed' ? 'Fixed Registration' : 'Transient (+10,000₫)'}
+                  </div>
+                </div>
+                <div className="player-actions">
+                  <button 
+                    className="btn btn-danger btn-sm" 
+                    onClick={() => handleRemovePlayer(player.id, player.name)}
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </section>
+    </CollapsibleSection>
   );
 };
 

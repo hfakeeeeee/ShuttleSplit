@@ -1,5 +1,6 @@
 import React from 'react';
 import { SessionSettings } from '../types';
+import CollapsibleSection from './CollapsibleSection';
 
 interface SessionSettingsProps {
   settings: SessionSettings;
@@ -13,8 +14,12 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
   };
 
   return (
-    <section className="card session-settings">
-      <h2><i className="fas fa-cog"></i> Session Settings</h2>
+    <CollapsibleSection 
+      title="Session Settings"
+      icon="fas fa-cog"
+      className="session-settings"
+      defaultExpanded={true}
+    >
       <div className="form-grid">
         <div className="form-group">
           <label htmlFor="courtFee">Court Fee per Session</label>
@@ -59,7 +64,7 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
           </div>
         </div>
       </div>
-    </section>
+    </CollapsibleSection>
   );
 };
 
