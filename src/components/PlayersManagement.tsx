@@ -4,7 +4,8 @@ import CollapsibleSection from './CollapsibleSection';
 
 interface PlayersManagementProps {
   players: Player[];
-  onAddPlayer: (name: string, type: 'fixed' | 'transient') => void;
+  onAddPlayer: (name: string) => void;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void; // Optional for backward compatibility
   onRemovePlayer: (id: number) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
@@ -12,12 +13,13 @@ interface PlayersManagementProps {
 const PlayersManagement: React.FC<PlayersManagementProps> = ({
   players,
   onAddPlayer,
+  onUpdatePlayer,
   onRemovePlayer,
   onShowNotification
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [playerName, setPlayerName] = useState('');
-  const [playerType, setPlayerType] = useState<'fixed' | 'transient'>('fixed');
+  const [editingPlayer, setEditingPlayer] = useState<{id: number, name: string} | null>(null);
 
   const handleAddPlayer = () => {
     setShowAddForm(true);
@@ -30,9 +32,8 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
     }
 
     try {
-      onAddPlayer(playerName.trim(), playerType);
+      onAddPlayer(playerName.trim());
       setPlayerName('');
-      setPlayerType('fixed');
       setShowAddForm(false);
       onShowNotification('Player added successfully!', 'success');
     } catch (error) {
@@ -43,7 +44,6 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   const handleCancelAdd = () => {
     setShowAddForm(false);
     setPlayerName('');
-    setPlayerType('fixed');
   };
 
   const handleRemovePlayer = (id: number, name: string) => {
@@ -53,14 +53,30 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
     }
   };
 
-  const renderHeader = () => (
-    <div className="section-header">
-      <h2><i className="fas fa-users"></i> Players Management</h2>
-      <button className="btn btn-primary" onClick={handleAddPlayer}>
-        <i className="fas fa-user-plus"></i> Add Player
-      </button>
-    </div>
-  );
+  const handleEditPlayer = (id: number, name: string) => {
+    setEditingPlayer({ id, name });
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingPlayer || !editingPlayer.name.trim()) {
+      onShowNotification('Please enter a player name', 'error');
+      return;
+    }
+
+    try {
+      if (onUpdatePlayer) {
+        onUpdatePlayer(editingPlayer.id, { name: editingPlayer.name.trim() });
+        onShowNotification('Player updated successfully!', 'success');
+      }
+      setEditingPlayer(null);
+    } catch (error) {
+      onShowNotification((error as Error).message, 'error');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPlayer(null);
+  };
 
   return (
     <CollapsibleSection
@@ -88,17 +104,6 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                   autoFocus
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="playerType">Player Type</label>
-                <select
-                  id="playerType"
-                  value={playerType}
-                  onChange={(e) => setPlayerType(e.target.value as 'fixed' | 'transient')}
-                >
-                  <option value="fixed">Fixed Registration</option>
-                  <option value="transient">Transient (+10,000₫)</option>
-                </select>
-              </div>
               <div className="form-actions">
                 <button className="btn btn-success" onClick={handleSavePlayer}>
                   <i className="fas fa-check"></i> Save
@@ -111,7 +116,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
           </div>
         )}
 
-        <div className="players-list">
+        <div className="players-grid">
           {players.length === 0 ? (
             <div className="empty-state">
               <i className="fas fa-user-plus"></i>
@@ -120,20 +125,44 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
           ) : (
             players.map(player => (
               <div key={player.id} className="player-card slide-in">
-                <div className="player-info">
-                  <div className="player-name">{player.name}</div>
-                  <div className={`player-type ${player.type}`}>
-                    {player.type === 'fixed' ? 'Fixed Registration' : 'Transient (+10,000₫)'}
+                {editingPlayer && editingPlayer.id === player.id ? (
+                  <div className="player-edit-form">
+                    <input
+                      type="text"
+                      value={editingPlayer.name}
+                      onChange={(e) => setEditingPlayer({...editingPlayer, name: e.target.value})}
+                      autoFocus
+                    />
+                    <div className="edit-actions">
+                      <button className="btn btn-success btn-sm" onClick={handleSaveEdit}>
+                        <i className="fas fa-check"></i>
+                      </button>
+                      <button className="btn btn-secondary btn-sm" onClick={handleCancelEdit}>
+                        <i className="fas fa-times"></i>
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="player-actions">
-                  <button 
-                    className="btn btn-danger btn-sm" 
-                    onClick={() => handleRemovePlayer(player.id, player.name)}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </div>
+                ) : (
+                  <>
+                    <div className="player-info">
+                      <div className="player-name">{player.name}</div>
+                    </div>
+                    <div className="player-actions">
+                      <button 
+                        className="btn btn-secondary btn-sm" 
+                        onClick={() => handleEditPlayer(player.id, player.name)}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        className="btn btn-danger btn-sm" 
+                        onClick={() => handleRemovePlayer(player.id, player.name)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ))
           )}

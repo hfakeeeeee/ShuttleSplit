@@ -9,6 +9,7 @@ interface SummaryTabProps {
   sessions: Session[];
   players: Player[];
   settings: AppSettings;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
 }
 
 interface SheetViewProps {
@@ -16,9 +17,15 @@ interface SheetViewProps {
   players: Player[];
   playerCosts: PlayerCost[];
   settings: AppSettings;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
 }
 
-const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings }) => {
+const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings, onUpdatePlayer }) => {
+  const togglePaymentStatus = (player: Player) => {
+    if (onUpdatePlayer) {
+      onUpdatePlayer(player.id, { hasPaid: !player.hasPaid });
+    }
+  };
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   
   const handleImageClick = (imageSrc: string) => {
@@ -80,6 +87,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
           <thead>
             <tr>
               <th className="player-header">Player</th>
+              <th className="payment-header">Paid</th>
               {sessions.map((session, index) => (
                 <th key={session.id} className="session-header">
                   {session.name}
@@ -92,15 +100,17 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
               {players.map(player => {
                 const playerCost = playerCosts.find(pc => pc.player.id === player.id);
                 return (
-                  <tr key={player.id} className="player-row">
+                  <tr key={player.id} className={`player-row ${player.hasPaid ? 'paid-row' : ''}`}>
                     <td className="player-cell">
                       <div className="player-info">
                         <span className="player-name">
                           <i className="fas fa-user"></i> {player.name}
                         </span>
-                        {player.type === 'transient' && (
-                          <span className="transient-badge">+10K</span>
-                        )}
+                      </div>
+                    </td>
+                    <td className="payment-cell">
+                      <div className="payment-checkbox" onClick={() => togglePaymentStatus(player)}>
+                        {player.hasPaid && <i className="fas fa-check"></i>}
                       </div>
                     </td>
                     {sessions.map((session, sessionIndex) => {
@@ -202,7 +212,8 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
   sessionsCount,
   sessions,
   players,
-  settings
+  settings,
+  onUpdatePlayer
 }) => {
   const [viewMode, setViewMode] = useState<'summary' | 'sheet'>('summary');
 
@@ -231,6 +242,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
           playerCosts={playerCosts}
           sessionsCount={sessionsCount}
           settings={settings}
+          onUpdatePlayer={onUpdatePlayer}
         />
       ) : (
         <SheetView
@@ -238,6 +250,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
           players={players}
           playerCosts={playerCosts}
           settings={settings}
+          onUpdatePlayer={onUpdatePlayer}
         />
       )}
     </div>

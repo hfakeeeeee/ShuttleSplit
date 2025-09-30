@@ -10,7 +10,15 @@ const sessionSettingsDocRef = doc(db, 'meta', 'sessionSettings');
 export const subscribePlayers = (cb: (players: Player[]) => void) => {
   const q = query(playersCol, orderBy('id', 'asc'));
   return onSnapshot(q, snapshot => {
-    const list: Player[] = snapshot.docs.map(d => d.data() as Player);
+    const list: Player[] = snapshot.docs.map(d => {
+      const data = d.data();
+      // Handle legacy player data that might not have hasPaid property
+      return {
+        id: data.id,
+        name: data.name,
+        hasPaid: data.hasPaid || false
+      } as Player;
+    });
     cb(list);
   });
 };

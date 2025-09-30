@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import './App.css';
+import './components/player-styles.css';
 
 // Components
 import Header from './components/Header';
@@ -21,7 +22,7 @@ const App: React.FC = () => {
   const [showAppSettings, setShowAppSettings] = useState(false);
   
   // Custom hooks
-  const { players, addPlayer, removePlayer } = usePlayers();
+  const { players, addPlayer, updatePlayer, removePlayer } = usePlayers();
   const { sessions, addSession, removeSession, updateSessionParticipants, updateSessionAdditionalFee, updateSessionWaterFee } = useSessions();
   const { settings, updateSettings } = useSettings();
   const { sessionSettings, updateSessionSettings } = useSessionSettings();
@@ -90,6 +91,7 @@ const App: React.FC = () => {
                 sessions={sessions}
                 players={players}
                 settings={settings}
+                onUpdatePlayer={updatePlayer}
               />
             )}
 
@@ -99,6 +101,7 @@ const App: React.FC = () => {
                 onUpdateSessionSettings={updateSessionSettings}
                 players={players}
                 onAddPlayer={addPlayer}
+                onUpdatePlayer={updatePlayer}
                 onRemovePlayer={removePlayer}
                 sessions={sessions}
                 sessionCosts={sessionCosts}

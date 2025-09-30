@@ -55,19 +55,8 @@ export const calculatePlayerCosts = (
           const totalSessionCost = sessionCosts.totalPerSession + sessionAdditionalFee + sessionWaterFee;
           const baseAmountPerPlayer = totalSessionCost / participatingCount;
           
-          // Transient players pay 10,000 VND more per session
-          const transientSurcharge = 10000;
-          const transientParticipants = participatingPlayers.filter(p => p.type === 'transient');
-          const fixedParticipants = participatingPlayers.filter(p => p.type === 'fixed');
-          
-          let costPerSession = baseAmountPerPlayer;
-          
-          if (player.type === 'transient') {
-            costPerSession = baseAmountPerPlayer + transientSurcharge;
-          } else if (transientParticipants.length > 0 && fixedParticipants.length > 0) {
-            // If there are transient players, fixed players pay slightly less
-            costPerSession = baseAmountPerPlayer - (transientParticipants.length * transientSurcharge) / fixedParticipants.length;
-          }
+          // All players pay the same amount per session
+          const costPerSession = baseAmountPerPlayer;
           
           const roundedCost = Math.round(costPerSession);
           totalCost += roundedCost;

@@ -1,0 +1,155 @@
+/* Player Grid Layout */.player-card.paid {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.player-card.unpaid {
+  border-color: var(--border-color);
+  background: var(--secondary-color);
+}s-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Player Card Enhancements */
+.player-card {
+  background: var(--secondary-color);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  min-height: auto;
+  text-align: center;
+}
+
+.player-card.paid {
+  border-color: var(--accent-color);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.player-card.unpaid {
+  border-color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.player-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.payment-status {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  width: fit-content;
+}
+
+.paid-status {
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.unpaid-status {
+  color: var(--danger-color);
+  font-weight: 500;
+}
+
+.player-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.player-edit-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.player-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Dark mode adjustments for player cards */
+[data-theme="dark"] .player-card.paid {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.6);
+}
+
+[data-theme="dark"] .player-card.unpaid {
+  background: var(--secondary-color);
+  border-color: var(--border-color);
+}
+
+/* Payment badge for summary */
+.payment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.payment-badge.paid {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+.payment-badge.unpaid {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+/* Payment actions - Removed since we're now using checkboxes */
+
+/* Summary component styles */
+.summary-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Media queries for player grid */
+@media (max-width: 768px) {
+  .players-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .players-grid {
+    grid-template-columns: 1fr;
+  }
+}

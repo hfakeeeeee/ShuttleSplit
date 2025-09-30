@@ -11,13 +11,20 @@ export const usePlayers = () => {
     return () => unsub();
   }, []);
 
-  const addPlayer = async (name: string, type: 'fixed' | 'transient') => {
+  const addPlayer = async (name: string) => {
     if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
       throw new Error('Player with this name already exists');
     }
-    const newPlayer: Player = { id: Date.now(), name, type };
+    const newPlayer: Player = { id: Date.now(), name, hasPaid: false };
     setPlayers(prev => [...prev, newPlayer]);
     await addPlayerDb(newPlayer);
+  };
+
+  const updatePlayer = async (id: number, updates: Partial<Player>) => {
+    const updated = players.map(p => p.id === id ? { ...p, ...updates } : p);
+    setPlayers(updated);
+    const player = updated.find(p => p.id === id)!;
+    await addPlayerDb(player); // Reuse the same function to update
   };
 
   const removePlayer = async (id: number) => {
@@ -25,7 +32,7 @@ export const usePlayers = () => {
     await removePlayerDb(id);
   };
 
-  return { players, addPlayer, removePlayer };
+  return { players, addPlayer, updatePlayer, removePlayer };
 };
 
 export const useSessions = () => {

@@ -40,10 +40,9 @@ npm start
 ## Features
 
 ### 🏸 Player Management
-- **Fixed Registration Players**: Regular members with standard pricing
-- **Transient Players**: Temporary players who pay an additional 10,000₫ per session
 - Easy add/remove player functionality
-- Player type categorization
+- Grid-based player view with inline name editing
+- Payment tracking with paid/unpaid status indicators in the Summary tab
 
 ### 💰 Fee Calculation
 - **Court Fee**: Basic court rental cost per session
@@ -82,17 +81,16 @@ npm start
 ## How It Works
 
 1. **Setup Session Details**: Enter court fee, shuttlecock price & quantity, water fee, and any additional costs
-2. **Add Players**: Add fixed registration players and transient players
+2. **Add Players**: Add players and manage them in the grid view
 3. **Create Sessions**: Add multiple playing sessions
 4. **View Summary**: See individual cost breakdown for each player
 5. **Generate QR Code**: Get payment QR code with bank details
 
 ## Pricing Logic
 
-- **Base Cost**: Total session cost divided equally among all players
-- **Transient Surcharge**: Transient players pay an additional 10,000₫ per session
-- **Fixed Player Adjustment**: Fixed players pay slightly less when transient players are present
-- **Fair Distribution**: Ensures fair cost sharing while maintaining the transient surcharge
+- **Equal Distribution**: Total session cost divided equally among all players
+- **Fair Distribution**: Costs are only allocated to players who participated in each session
+- **Payment Tracking**: Track payment status for each player (paid/unpaid) in the Summary tab
 
 ## Technology Stack
 
@@ -145,8 +143,8 @@ The CSS uses custom properties (CSS variables) for easy theme customization. Mod
 ### Currency Format
 The application is configured for Vietnamese Dong (₫). To change currency, modify the `formatCurrency` method in `script.js`.
 
-### Transient Surcharge
-The 10,000₫ surcharge for transient players can be modified in the `calculatePlayerCosts` method.
+### Payment Status
+The payment status for each player can be toggled in the Players Management and Summary sections.
 
 ## Contributing
 

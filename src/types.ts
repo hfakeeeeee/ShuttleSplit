@@ -1,7 +1,7 @@
 export interface Player {
   id: number;
   name: string;
-  type: 'fixed' | 'transient';
+  hasPaid?: boolean; // New property to track payment status
 }
 
 export interface Session {

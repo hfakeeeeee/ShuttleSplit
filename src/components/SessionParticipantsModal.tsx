@@ -96,8 +96,11 @@ const SessionParticipantsModal: React.FC<SessionParticipantsModalProps> = ({
                 </div>
                 <div className="participant-info">
                   <div className="participant-name">{player.name}</div>
-                  <div className={`participant-type ${player.type}`}>
-                    {player.type === 'fixed' ? 'Fixed Registration' : 'Transient (+10,000₫)'}
+                  <div className={`payment-status`}>
+                    {player.hasPaid ? 
+                      <span className="paid-status"><i className="fas fa-check-circle"></i> Paid</span> : 
+                      <span className="unpaid-status"><i className="fas fa-times-circle"></i> Unpaid</span>
+                    }
                   </div>
                 </div>
                 <div className="participant-status">

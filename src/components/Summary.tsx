@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { PlayerCost, AppSettings } from '../types';
-import { formatCurrency } from '../utils';
+﻿import React, { useState, useEffect } from "react";
+import { PlayerCost, AppSettings, Player } from "../types";
+import { formatCurrency } from "../utils";
 
 interface SummaryProps {
   playerCosts: PlayerCost[];
   sessionsCount: number;
   settings: AppSettings;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
 }
 
 const Summary: React.FC<SummaryProps> = ({
   playerCosts,
   sessionsCount,
-  settings
+  settings,
+  onUpdatePlayer
 }) => {
+  // Payment status is now managed in the sheet view
+
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const totalRevenue = playerCosts.reduce((sum, pc) => sum + pc.totalCost, 0);
 
@@ -27,19 +31,19 @@ const Summary: React.FC<SummaryProps> = ({
   // Handle ESC key to close zoom
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && zoomedImage) {
+      if (event.key === "Escape" && zoomedImage) {
         handleCloseZoom();
       }
     };
 
     if (zoomedImage) {
-      document.addEventListener('keydown', handleEscKey);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      document.addEventListener("keydown", handleEscKey);
+      document.body.style.overflow = "hidden"; // Prevent background scrolling
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscKey);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscKey);
+      document.body.style.overflow = "unset";
     };
   }, [zoomedImage]);
 
@@ -61,29 +65,27 @@ const Summary: React.FC<SummaryProps> = ({
       <div className="summary-content">
         <div className="summary-grid">
           {playerCosts.map(playerCost => (
-            <div key={playerCost.player.id} className="summary-card fade-in">
+            <div key={playerCost.player.id} className={`summary-card fade-in ${playerCost.player.hasPaid ? "paid-card" : ""}`}>
               <div className="summary-header">
-                <span className="player-summary-name">
-                  <i className="fas fa-user"></i> {playerCost.player.name}
-                  {playerCost.player.type === 'transient' && (
-                    <span style={{ color: 'var(--warning-color)', fontSize: '0.8em' }}>
-                      {' '}(+10K)
-                    </span>
-                  )}
-                </span>
-                <span className="player-total">
-                  {formatCurrency(playerCost.totalCost)}
-                </span>
+                <div className="player-info">
+                  <span className="player-summary-name">
+                    <i className="fas fa-user"></i> {playerCost.player.name}
+                  </span>
+                  <span className="player-total">
+                    {formatCurrency(playerCost.totalCost)}
+                  </span>
+                </div>
               </div>
+              {/* Payment actions removed - now only in Sheet view */}
               <div className="session-breakdown">
                 {playerCost.sessions.map((session, index) => (
-                  <div key={index} className={`session-item ${!session.participated ? 'not-participated' : ''}`}>
+                  <div key={index} className={`session-item ${!session.participated ? "not-participated" : ""}`}>
                     <span className="session-name">
                       {session.sessionName}
-                      {!session.participated && <i className="fas fa-times-circle" style={{ marginLeft: '0.5rem', color: 'var(--text-light)' }}></i>}
+                      {!session.participated && <i className="fas fa-times-circle" style={{ marginLeft: "0.5rem", color: "var(--text-light)" }}></i>}
                     </span>
                     <span className="session-amount">
-                      {session.participated ? formatCurrency(session.cost) : 'Not joined'}
+                      {session.participated ? formatCurrency(session.cost) : "Not joined"}
                     </span>
                   </div>
                 ))}

@@ -14,7 +14,8 @@ interface SettingsTabProps {
   
   // Players
   players: Player[];
-  onAddPlayer: (name: string, type: 'fixed' | 'transient') => void;
+  onAddPlayer: (name: string) => void;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
   onRemovePlayer: (id: number) => void;
   
   // Sessions
@@ -41,6 +42,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   onUpdateSessionSettings,
   players,
   onAddPlayer,
+  onUpdatePlayer,
   onRemovePlayer,
   sessions,
   sessionCosts,
@@ -67,6 +69,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
       <PlayersManagement
         players={players}
         onAddPlayer={onAddPlayer}
+        onUpdatePlayer={onUpdatePlayer}
         onRemovePlayer={onRemovePlayer}
         onShowNotification={onShowNotification}
       />
