@@ -216,7 +216,7 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
   return (
     <div className="tab-content fade-in">
       <CollapsibleSection
-        title={`Plan for ${getNextMonthName()}`}
+        title={`Plan for next month`}
         icon="fas fa-calendar-alt"
         className="planned-sessions-section"
         defaultExpanded={true}
