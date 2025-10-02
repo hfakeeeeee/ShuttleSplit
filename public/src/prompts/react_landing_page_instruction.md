@@ -1,0 +1,205 @@
+Create an EXCEPTIONAL, cutting-edge React landing page for: {instructions}
+
+DESIGN EXCELLENCE REQUIREMENTS:
+- Framework: {framework} with {language}
+- Build: Ultra-modern, error-free, high-conversion landing page
+- Style: Advanced Tailwind CSS with sophisticated, minimal aesthetics
+- Color Philosophy: Clean, deliberate color usage with purposeful accents
+- Animations: Smooth, performant scroll-triggered animations and micro-interactions
+- Typography: Premium font pairing with perfect readability and visual hierarchy
+
+LANDING PAGE PERFECTION STANDARDS:
+- Core Required Sections:
+  - Hero Section: Bold, attention-grabbing with crystal-clear value proposition
+  - Feature Showcase: Visually distinct sections highlighting key benefits
+  - Social Proof: Testimonials, client logos, and trust indicators strategically placed
+  - Primary Call-to-Action: High-contrast, compelling CTA buttons with perfect placement
+  
+- Creative Expansion Sections (Add based on requirements):
+  - Interactive Product Showcase: 3D models, interactive demos, or product tours
+  - Video Background Sections: Cinematic, auto-playing background videos (with fallbacks)
+  - Parallax Scrolling Effects: Depth-creating parallax backgrounds when appropriate
+  - Advanced Animation Sequences: Multi-step reveal animations for storytelling
+  - Custom Cursor Effects: Unique cursor interactions that enhance UX
+  - Interactive Infographics: Data visualizations that respond to user interaction
+  - Gamification Elements: Interactive challenges, quizzes, or rewards
+  - Split-screen Layouts: Creative content presentation with split viewports
+  - Horizontal Scrolling Sections: Unique side-scrolling content when appropriate
+  - Micro-interaction Rich UI: Subtle animations on every interactive element
+  - Morphing Shapes/SVGs: Animated shape transformations as design elements
+  
+- Universal Requirements:
+  - Visual Flow: Guided visual journey leading to conversion points
+  - Engagement Elements: Interactive components that enhance user experience
+  - Mobile Excellence: Flawless responsive design with zero layout issues
+
+MODERN CLEAN COLOR PALETTE - MANDATORY:
+- Primary: ONE bold accent color used strategically for CTAs and key elements
+- Background: Clean, neutral base with subtle contrast variations
+- Dark mode: Sophisticated dark theme option with proper contrast
+- Text: Perfect readability with appropriate contrast ratios
+- AVOID: Visual clutter, excessive colors, distracting elements
+- USE: Monochromatic schemes with intentional accent color
+
+PIXEL-PERFECT LAYOUT STANDARDS - CRITICAL:
+- Golden Ratio: Apply 1.618 proportion to critical layout elements
+- Visual Hierarchy: Clear content prioritization through size, spacing, and contrast
+- Whitespace: Strategic use of negative space to enhance focus and readability
+- Grid System: Precision 12-column grid with consistent gutters
+- Vertical Rhythm: Consistent spacing between elements (8px/16px increments)
+- Section Spacing: Optimal breathing room between major content blocks
+- Z-index Management: Perfect layering with no accidental overlaps
+- Component Spacing: Consistent margins and padding across all elements
+- Responsive Precision: Maintain visual integrity across all breakpoints
+- Container Constraints: Max-width constraints for optimal readability
+
+CREATIVE FREEDOM & INTELLIGENCE - SMART ADAPTATION:
+- ANALYZE the user's instructions for specific requirements and industry
+- IF user mentions "tech", "SaaS", "app": CREATE minimal, tech-focused design with sleek UI elements
+- IF user mentions "creative", "agency", "design": CREATE bold, artistic layout with dynamic elements
+- IF user mentions "professional", "corporate", "business": CREATE sophisticated, trustworthy design with premium feel
+- ALWAYS adapt design language to match the brand personality and target audience
+- ADD unique interactive elements that enhance the user experience without sacrificing performance
+
+CREATIVE FLEXIBILITY GUIDELINES:
+- IDENTIFY any special creative requirements in user instructions
+- IF user mentions "3D", "immersive", "interactive": ADD three.js integration with interactive 3D elements
+- IF user mentions "animation", "motion", "dynamic": ENHANCE with GSAP animations beyond standard transitions
+- IF user mentions "scroll effects", "parallax": IMPLEMENT advanced scroll-driven animations
+- IF user mentions "innovative", "cutting-edge", "unique": INCORPORATE experimental UI patterns like custom cursors or morphing elements
+- IF user mentions "storytelling", "narrative", "journey": CREATE a sequential reveal experience that tells a story
+- IF user mentions "game", "playful", "interactive": ADD gamification elements and interactive challenges
+- IF user mentions "data", "metrics", "stats": INCLUDE dynamic data visualizations or interactive infographics
+- PRIORITIZE creativity requested by user but NEVER sacrifice conversion optimization or performance
+
+IMAGE REQUIREMENTS - MANDATORY:
+- Hero Image: High-impact visual that communicates the main value proposition
+- Feature Illustrations: Cohesive visual style across all feature sections
+- Team/About Photos: Professional, consistent photography style (if applicable)
+- ALL images must use placehold.co URLs: https://placehold.co/WIDTHxHEIGHT
+- Examples: https://placehold.co/1200x800, https://placehold.co/400x300, https://placehold.co/100x100
+- NO internal image sources (./assets/, /images/, etc.)
+- Add descriptive text parameter: https://placehold.co/800x600?text=Hero+Image
+- Maintain consistent aspect ratios across similar image types
+
+MODERN DESIGN ELEMENTS:
+- Glassmorphism: Subtle frosted-glass effects for UI components
+- Subtle Shadows: Layered depth cues without heaviness (shadow-sm, shadow-md)
+- Gradient Accents: Strategic use of subtle gradients for visual interest
+- Micro-interactions: Subtle hover/focus states that enhance usability
+- Border Treatments: Consistent border radius and weight across components
+- Divider Lines: Subtle section separators with appropriate opacity
+- Card Components: Clean, consistent card designs with proper spacing
+- Button Styles: High-contrast CTAs with perfect padding and hover states
+
+CONVERSION OPTIMIZATION - CRITICAL:
+- Clear Value Proposition: Immediately visible unique selling points
+- Strategic CTA Placement: Primary and secondary conversion points
+- Above-the-fold Action: Ensure primary CTA is visible without scrolling
+- Visual Hierarchy: Guide attention to key conversion elements
+- Social Proof: Position testimonials and trust indicators near decision points
+- Reduced Friction: Minimize form fields and steps to conversion
+- Clear Benefits: Communicate value before asking for commitment
+- Mobile Conversion: Ensure all CTAs are easily tappable on mobile
+- Performance Focus: Ensure animations never impact page loading speed
+- A/B Test Ready: Structure allows for easy variation testing
+
+ANIMATION & INTERACTION EXCELLENCE:
+- Scroll-triggered Animations: Subtle reveal effects using Intersection Observer API
+- Micro-interactions: Delightful feedback on user actions
+- Performance-first: Only use CSS transitions and transforms for smoothness
+- Prefers-reduced-motion: Respect user motion preferences
+- Purposeful Motion: Only animate elements that enhance understanding
+- Consistent Timing: Use standard easing and duration across similar animations
+- State Changes: Smooth transitions between UI states
+- Loading States: Elegant handling of asynchronous operations
+
+TECHNICAL REQUIREMENTS - CRITICAL:
+- Error-free Code: Zero console errors, warnings, or React key issues
+- Semantic HTML: Proper heading hierarchy and accessibility structure
+- Web Vitals Optimized: Fast LCP, minimal CLS, responsive FID
+- Responsive Excellence: Perfect on all devices from 320px to 2560px width
+- Accessibility: WCAG AA compliance with proper contrast and focus states
+- Performance: Minimal bundle size with lazy-loaded components
+- Include ALL necessary dependencies in package.json
+- Dependencies: react, react-dom, react-router-dom, framer-motion (for animations)
+- DevDependencies: vite, tailwindcss, postcss, autoprefixer, @types/* for TypeScript
+- Ensure vite.config includes React plugin import and usage
+- All generated code must work without additional installation steps
+
+STRUCTURE:
+- React 18+ with modern hooks and clean patterns
+- Proper component segmentation for maintainability
+- Error boundaries for graceful failure handling
+- Lazy loading for non-critical components
+- Clean separation of layout and UI components
+
+OUTPUT FORMAT:
+Return ONLY valid JSON with properly escaped strings:
+{{
+  "project_name": "{project_name}",
+  "framework": "{framework}",
+  "language": "{language}",
+  "instructions": "Brief instruction of what you built",
+  "files": {{
+    "package.json": "Complete package.json with React 18, Vite, Tailwind, framer-motion, @vitejs/plugin-react, autoprefixer", DON'T ADD type module to package.json, ensure must have scripts to start dev server, ADD any creative-specific packages based on requirements (three.js, gsap, etc.),
+    "index.html": "HTML with proper meta tags and clean structure", ALWAYS include script leading to src/main.{main_ext} in index.html",
+    "vite.config.{file_ext}": "Vite config with React plugin and server: {{host: true, cors: true, allowedHosts: true}} - KEEP allowedHosts as boolean true - INCLUDE @vitejs/plugin-react",
+    "tailwind.config.js": "Clean Tailwind config with consistent design tokens", keep plugins empty for now,
+    "postcss.config.js": "PostCSS config for Tailwind",{config_files}
+    "src/main.{main_ext}": "React entry point with clean setup",
+    "src/App.{main_ext}": "Main App component with smooth scrolling setup",
+    "src/index.css": "Global styles with Tailwind, clean base styles, and animation utilities",
+    "src/components/layout/Header.{main_ext}": "Responsive header with perfect navigation",
+    "src/components/layout/Footer.{main_ext}": "Clean, informative footer with proper links",
+    
+    "# CORE REQUIRED SECTIONS": "These sections must be implemented in every landing page",
+    "src/components/sections/HeroSection.{main_ext}": "High-impact hero section with clear value proposition and primary CTA",
+    "src/components/sections/FeatureSection.{main_ext}": "Visually appealing feature showcase",
+    "src/components/sections/TestimonialSection.{main_ext}": "Trust-building testimonials with proper attribution",
+    "src/components/sections/CtaSection.{main_ext}": "Compelling call-to-action section",
+    
+    "# CREATIVE SECTIONS BASED ON REQUIREMENTS": "Implement sections based on specific creative requirements",
+    "src/components/sections/InteractiveShowcase.{main_ext}": "Optional: Interactive product showcase with advanced animations",
+    "src/components/sections/ParallaxSection.{main_ext}": "Optional: Section with parallax scrolling effects",
+    "src/components/sections/VideoHero.{main_ext}": "Optional: Hero section with video background",
+    "src/components/sections/DataVisualization.{main_ext}": "Optional: Interactive data visualization section",
+    "src/components/sections/HorizontalScroller.{main_ext}": "Optional: Horizontal scrolling content section",
+    "src/components/sections/SplitContent.{main_ext}": "Optional: Split-screen content presentation",
+    "src/components/sections/InteractiveChallenge.{main_ext}": "Optional: Gamified interactive elements",
+    
+    "# UI COMPONENTS": "Essential UI components for landing page",
+    "src/components/ui/Button.{main_ext}": "Reusable, accessible button component with proper states",
+    "src/components/ui/Card.{main_ext}": "Clean, consistent card component",
+    "src/components/ui/AnimatedElement.{main_ext}": "Reusable scroll-triggered animation wrapper",
+    "src/components/ui/CustomCursor.{main_ext}": "Optional: Custom cursor effects component",
+    "src/components/ui/MorphingShape.{main_ext}": "Optional: SVG shape morphing component",
+    "src/components/ui/ParticleBackground.{main_ext}": "Optional: Interactive particle background component",
+    
+    "# HOOKS AND UTILITIES": "Functionality helpers",
+    "src/hooks/useIntersectionObserver.{main_ext}": "Custom hook for scroll-triggered animations",
+    "src/hooks/useSmoothScroll.{main_ext}": "Custom hook for smooth anchor scrolling",
+    "src/hooks/useMousePosition.{main_ext}": "Optional: Custom hook for tracking mouse movement",
+    "src/hooks/use3DEffect.{main_ext}": "Optional: Custom hook for 3D tilt effects",
+    "src/utils/animation.{main_ext}": "Animation utility functions",
+    
+    "# ADDITIONAL CREATIVE FILES BASED ON REQUIREMENTS": "Include specialized files based on creative needs"
+  }}
+}}
+
+CRITICAL RULES:
+- ERROR-FREE: No console errors, warnings, or React key issues
+- PERFORMANCE-FIRST: Optimize for Core Web Vitals and smooth interactions
+- CONVERSION-FOCUSED: Design patterns that maximize lead generation/sales
+- ACCESSIBILITY: WCAG AA compliance with proper contrast and focus management
+- RESPONSIVE EXCELLENCE: Perfect layout from 320px to 2560px
+- CLEAN and MODERN over flashy and complex
+- CONSISTENT layout and spacing across ALL sections
+- STRATEGIC accent color usage for maximum impact
+- PURPOSEFUL animations that enhance the experience
+- CLEAR visual hierarchy guiding users to conversion points
+- Proper responsive design that never breaks on any device
+- Professional, high-conversion landing page design
+- Valid JSX syntax with proper JSON escaping
+- MANDATORY: All images must use placehold.co URLs
+- Test layout on mobile, tablet, and desktop breakpoints
