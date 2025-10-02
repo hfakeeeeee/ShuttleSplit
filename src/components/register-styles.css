@@ -180,7 +180,7 @@
 .participants-overview {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .participants-count {
@@ -193,7 +193,7 @@
 
 .session-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.5rem;
   margin-top: auto;
   padding-top: 1rem;
@@ -241,6 +241,24 @@
   font-size: 1rem;
 }
 
+.player-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.registration-summary {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  gap: 0.3rem;
+}
+
+.registration-summary span {
+  font-weight: 500;
+}
+
 .player-avatar-more {
   width: 32px;
   height: 32px;
@@ -255,14 +273,122 @@
   border: 2px solid var(--bg-secondary);
 }
 
+.player-avatar-walkin {
+  min-width: 28px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: var(--warning-light);
+  color: var(--warning-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  border: 1px solid var(--warning-color);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0 0.4rem;
+}
+
 .registered-players {
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .no-players {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-style: italic;
+}
+
+/* Walk-in guest styles */
+.walk-in-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: var(--warning-light);
+  color: var(--warning-color);
+  border-radius: 15px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.walk-in-badge i {
+  font-size: 0.85rem;
+}
+
+/* We're using the ::after pseudo-element on the card instead of this indicator */
+
+.registration-info {
+  background-color: var(--primary-color-light-transparent);
+  border: 1px solid var(--primary-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 60px;
+}
+
+.registration-warning {
+  background-color: var(--warning-light);
+  border: 1px solid var(--warning-color);
+}
+
+.registration-info i {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.registration-warning i {
+  color: var(--warning-color);
+}
+
+.registration-content {
+  flex: 1;
+}
+
+.registration-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.registration-stats {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.registration-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.regular-count {
+  background-color: var(--primary-color-light-transparent);
+  color: var(--primary-color);
+}
+
+.walkin-count {
+  background-color: var(--warning-light);
+  color: var(--warning-color);
+}
+
+.total-count {
+  background-color: var(--success-light);
+  color: var(--success);
 }
 
 /* Loading state */
@@ -281,10 +407,23 @@
   display: flex;
   align-items: center;
   position: relative;
-  padding-left: 30px;
+  padding-left: 28px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
   user-select: none;
+  width: 100%;
+}
+
+.participant-card .player-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .modern-checkbox input {
@@ -298,10 +437,10 @@
 .checkmark {
   position: absolute;
   left: 0;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   border-radius: 4px;
-  border: 2px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   background-color: var(--bg-input);
   transition: all 0.2s ease;
 }
@@ -326,10 +465,10 @@
 }
 
 .modern-checkbox .checkmark:after {
-  left: 6px;
+  left: 5px;
   top: 2px;
   width: 5px;
-  height: 10px;
+  height: 9px;
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
@@ -337,13 +476,30 @@
 
 .participants-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 400px;
+  padding: 0.5rem 0;
+}
+
+@media (max-width: 1200px) {
+  .participants-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 992px) {
   .participants-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .register-modal {
+    min-width: 95%;
+    width: 95%;
   }
 }
 
@@ -455,24 +611,88 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  width: 95%;
+  max-width: 1200px;
+  min-width: 800px;
+  min-height: 600px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .register-modal {
+    min-width: 90%;
+    min-height: 80vh;
+  }
 }
 
 .modal-body {
   background-color: var(--bg-primary);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.register-modal .modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.register-modal .modal-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }
 
 .participant-card {
-  padding: 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
 }
 
 .participant-card:hover {
   transform: translateY(-2px);
   border-color: var(--primary-color-light);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.participant-card.walk-in-guest {
+  background-color: var(--bg-primary);
+  border-color: var(--warning-color);
+  position: relative;
+}
+
+.participant-card.walk-in-guest::after {
+  content: 'Walk-in';
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--warning-light);
+  color: var(--warning-color);
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0 8px 0 4px;
+  box-shadow: none;
+  border-left: 1px solid var(--warning-color);
+  border-bottom: 1px solid var(--warning-color);
+  display: flex;
+  align-items: center;
+}
+
+.participant-card.walk-in-guest:hover {
+  border-color: var(--warning-color);
 }
 
 /* Dark mode adjustments */

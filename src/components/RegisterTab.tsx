@@ -4,9 +4,13 @@ import CollapsibleSection from './CollapsibleSection';
 import { db } from '../firebase';
 import { collection, addDoc, deleteDoc, doc, updateDoc, getDocs, query, where, Timestamp } from 'firebase/firestore';
 
+// Constants
+const MAX_REGULAR_PLAYERS = 13; // Maximum number of regular registered players
+
 interface PlannedSession extends Omit<Session, 'id'> {
   id?: string; // Firestore ID is string
   createdAt?: Timestamp;
+  walkInGuests?: number; // Number of walk-in guests
 }
 
 interface RegisterTabProps {
@@ -80,6 +84,7 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
         participants: [],
         additionalFee: 0,
         waterFee: 0,
+        walkInGuests: 0,
         createdAt: Timestamp.now()
       };
       
@@ -139,11 +144,25 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
         // Start the update operation
         const sessionRef = doc(db, 'plannedSessions', selectedSession.id);
         
+        // Calculate walk-in guests if participants exceed the limit
+        let regularParticipants = participants;
+        let walkInGuests = 0;
+        
+        if (participants.length > MAX_REGULAR_PLAYERS) {
+          // First 13 are regular, the rest are walk-ins
+          regularParticipants = participants;
+          walkInGuests = participants.length - MAX_REGULAR_PLAYERS;
+        }
+        
         // Pre-update the local state for immediate feedback
         setPlannedSessions(prev => 
           prev.map(session => 
             session.id === selectedSession.id 
-              ? { ...session, participants } 
+              ? { 
+                  ...session, 
+                  participants: regularParticipants,
+                  walkInGuests: walkInGuests
+                } 
               : session
           )
         );
@@ -153,8 +172,17 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
         setSelectedSession(null);
         
         // Now perform the Firestore update
-        await updateDoc(sessionRef, { participants });
-        onShowNotification('Participants updated successfully!', 'success');
+        await updateDoc(sessionRef, { 
+          participants: regularParticipants,
+          walkInGuests: walkInGuests
+        });
+        
+        // Show appropriate notification
+        if (walkInGuests > 0) {
+          onShowNotification(`Updated with ${regularParticipants.length} regular players and ${walkInGuests} walk-in guests`, 'success');
+        } else {
+          onShowNotification('Participants updated successfully!', 'success');
+        }
       } catch (error) {
         console.error('Error updating participants:', error);
         onShowNotification('Failed to update participants', 'error');
@@ -268,27 +296,42 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                     <div className="session-details">
                       <div className="participants-overview">
                         <div className="participants-count">
-                          <i className="fas fa-users"></i>
                           <span>
-                            <strong>{session.participants.length}</strong> players registered
+                            <strong>{session.participants.length}</strong> {session.participants.length === 1 ? 'player' : 'players'}
                           </span>
                         </div>
                       </div>
                       
                       <div className="registered-players">
                         {session.participants.length > 0 ? (
-                          <div className="player-avatars">
-                            {session.participants.slice(0, 3).map(playerId => {
-                              const player = memoizedPlayers.find(p => p.id === playerId);
-                              return player ? (
-                                <div key={player.id} className="player-avatar" title={player.name}>
-                                  <i className="fas fa-user-circle"></i>
+                          <div className="player-overview">
+                            <div className="player-avatars">
+                              {/* Regular players */}
+                              {session.participants.slice(0, Math.min(3, MAX_REGULAR_PLAYERS)).map((playerId, index) => {
+                                const player = memoizedPlayers.find(p => p.id === playerId);
+                                return player ? (
+                                  <div key={player.id} className="player-avatar" title={player.name}>
+                                    <i className="fas fa-user-circle"></i>
+                                  </div>
+                                ) : null;
+                              })}
+                              {/* Show more regular players indicator */}
+                              {session.participants.length > 3 && session.participants.length <= MAX_REGULAR_PLAYERS && (
+                                <div className="player-avatar-more" title={`${session.participants.length - 3} more players`}>
+                                  +{session.participants.length - 3}
                                 </div>
-                              ) : null;
-                            })}
-                            {session.participants.length > 3 && (
-                              <div className="player-avatar-more" title={`${session.participants.length - 3} more players`}>
-                                +{session.participants.length - 3}
+                              )}
+                              {/* Show walk-in indicator if needed */}
+                              {session.participants.length > MAX_REGULAR_PLAYERS && (
+                                <div className="player-avatar-walkin" title={`${session.walkInGuests || 0} walk-in guests`}>
+                                  +{session.walkInGuests || 0}
+                                </div>
+                              )}
+                            </div>
+                            
+                            {(session.walkInGuests || 0) > 0 && (
+                              <div className="registration-summary">
+                                <span>{Math.min(session.participants.length, MAX_REGULAR_PLAYERS)} regular + {session.walkInGuests} walk-in</span>
                               </div>
                             )}
                           </div>
@@ -332,6 +375,38 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                   </button>
                 </div>
                 <div className="modal-body">
+                  {/* Registration information panel - always visible with consistent height */}
+                  <div className={`registration-info ${selectedSession.participants.length > MAX_REGULAR_PLAYERS ? 'registration-warning' : ''}`}>
+                    {selectedSession.participants.length > MAX_REGULAR_PLAYERS ? (
+                      <>
+                        <i className="fas fa-exclamation-triangle"></i>
+                        <div className="registration-content">
+                          <p>
+                            <strong>Walk-in Guest Notice:</strong> Players beyond the first {MAX_REGULAR_PLAYERS} will be considered "Walk-in Guests".
+                          </p>
+                          <p className="registration-stats">
+                            <span className="regular-count"><i className="fas fa-user"></i> Regular: {Math.min(selectedSession.participants.length, MAX_REGULAR_PLAYERS)}</span>
+                            <span className="walkin-count"><i className="fas fa-walking"></i> Walk-in: {Math.max(0, selectedSession.participants.length - MAX_REGULAR_PLAYERS)}</span>
+                            <span className="total-count"><i className="fas fa-users"></i> Total: {selectedSession.participants.length}</span>
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-info-circle"></i>
+                        <div className="registration-content">
+                          <p>
+                            <strong>Player Registration:</strong> Currently {selectedSession.participants.length} {selectedSession.participants.length === 1 ? 'player' : 'players'} selected.
+                          </p>
+                          <p className="registration-stats">
+                            <span className="regular-count"><i className="fas fa-user"></i> Regular: {selectedSession.participants.length}</span>
+                            <span className="total-count"><i className="fas fa-users"></i> Total: {selectedSession.participants.length}</span>
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
                   {memoizedPlayers.length === 0 ? (
                     <div className="empty-state">
                       <i className="fas fa-users"></i>
@@ -340,16 +415,29 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                   ) : (
                     <div className="participants-grid">
                       {memoizedPlayers.map(player => (
-                        <div key={player.id} className="participant-card">
+                        <div 
+                          key={player.id} 
+                          className={`participant-card ${
+                            selectedSession.participants.includes(player.id) && 
+                            selectedSession.participants.findIndex(id => id === player.id) >= MAX_REGULAR_PLAYERS 
+                              ? 'walk-in-guest' 
+                              : ''
+                          }`}
+                        >
+                          {/* The walk-in label is handled by ::after in CSS */}
                           <label className="checkbox-container modern-checkbox">
                             <input
                               type="checkbox"
                               checked={selectedSession.participants.includes(player.id)}
                               onChange={(e) => {
                                 const isChecked = e.target.checked;
-                                const updatedParticipants = isChecked
-                                  ? [...selectedSession.participants, player.id]
-                                  : selectedSession.participants.filter(id => id !== player.id);
+                                let updatedParticipants;
+                                
+                                if (isChecked) {
+                                  updatedParticipants = [...selectedSession.participants, player.id];
+                                } else {
+                                  updatedParticipants = selectedSession.participants.filter(id => id !== player.id);
+                                }
 
                                 setSelectedSession({
                                   ...selectedSession,
