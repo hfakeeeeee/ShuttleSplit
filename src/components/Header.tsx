@@ -14,7 +14,7 @@ const Header: React.FC = () => {
         <div className="header-bottom">
           <div className="keyboard-shortcuts">
             <small style={{ color: 'var(--text-light)', fontSize: '0.8rem' }}>
-              💡 Shortcuts: Ctrl+1 (Summary) | Ctrl+2 (Settings)
+              💡 Shortcuts: Ctrl+1 (Summary) | Ctrl+2 (Register) | Ctrl+3 (Settings)
             </small>
           </div>
           <ThemeToggle />

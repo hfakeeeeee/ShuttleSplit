@@ -1,12 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import './App.css';
 import './components/player-styles.css';
+import './components/register-styles.css';
+import './components/settings-lock-styles.css';
+import { Session } from './types';
 
 // Components
 import Header from './components/Header';
 import Tabs from './components/Tabs';
 import SettingsTab from './components/SettingsTab';
 import SummaryTab from './components/SummaryTab';
+import RegisterTab from './components/RegisterTab';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
 import { ThemeProvider } from './components/ThemeProvider';
@@ -27,10 +31,14 @@ const App: React.FC = () => {
   const { settings, updateSettings } = useSettings();
   const { sessionSettings, updateSessionSettings } = useSessionSettings();
   const { notification, showNotification } = useNotification();
+  
+  // No longer need local state for planned sessions - using Firestore
 
   // Calculations
   const sessionCosts = useMemo(() => calculateSessionCosts(sessionSettings, sessions.length), [sessionSettings, sessions.length]);
   const playerCosts = useMemo(() => calculatePlayerCosts(players, sessions, sessionCosts), [players, sessions, sessionCosts]);
+  
+  // No longer saving to localStorage - using Firestore instead
 
   // Event handlers
   const handleTabChange = (tab: string) => {
@@ -66,6 +74,11 @@ const App: React.FC = () => {
       
       if (e.ctrlKey && e.key === '2') {
         e.preventDefault();
+        setActiveTab('register');
+      }
+      
+      if (e.ctrlKey && e.key === '3') {
+        e.preventDefault();
         setActiveTab('settings');
       }
     };
@@ -81,7 +94,7 @@ const App: React.FC = () => {
           <Header />
 
           {/* Tabs Navigation */}
-          <Tabs activeTab={activeTab} onTabChange={handleTabChange} />
+          <Tabs activeTab={activeTab} onTabChange={handleTabChange} hasRegisterTab={true} />
 
           <main className="main-content">
             {activeTab === 'summary' && (
@@ -92,6 +105,13 @@ const App: React.FC = () => {
                 players={players}
                 settings={settings}
                 onUpdatePlayer={updatePlayer}
+              />
+            )}
+            
+            {activeTab === 'register' && (
+              <RegisterTab
+                players={players}
+                onShowNotification={showNotification}
               />
             )}
 

@@ -10,6 +10,7 @@ interface PlayersManagementProps {
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   isExpanded?: boolean;
   onToggle?: (isExpanded: boolean) => void;
+  disabled?: boolean;
 }
 
 const PlayersManagement: React.FC<PlayersManagementProps> = ({
@@ -19,7 +20,8 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   onRemovePlayer,
   onShowNotification,
   isExpanded,
-  onToggle
+  onToggle,
+  disabled = false
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [playerName, setPlayerName] = useState('');
@@ -34,7 +36,9 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   };
 
   const handleAddPlayer = () => {
-    setShowAddForm(true);
+    if (!disabled) {
+      setShowAddForm(true);
+    }
   };
 
   const handleSavePlayer = () => {
@@ -59,6 +63,8 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   };
 
   const handleRemovePlayer = (id: number, name: string) => {
+    if (disabled) return;
+    
     if (window.confirm(`Are you sure you want to remove ${name}?`)) {
       onRemovePlayer(id);
       onShowNotification('Player removed successfully!', 'success');
@@ -66,7 +72,9 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   };
 
   const handleEditPlayer = (id: number, name: string) => {
-    setEditingPlayer({ id, name });
+    if (!disabled) {
+      setEditingPlayer({ id, name });
+    }
   };
 
   const handleSaveEdit = () => {
@@ -94,13 +102,18 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
     <CollapsibleSection
       title="Players Management"
       icon="fas fa-users"
-      className="players-section"
+      className={`players-section ${disabled ? 'disabled-section' : ''}`}
       defaultExpanded={true}
       isExpanded={isExpanded !== undefined ? isExpanded : localExpanded}
       onToggle={handleToggle}
     >
       <div>
-        <button className="btn btn-primary" onClick={handleAddPlayer} style={{ marginBottom: '1rem' }}>
+        <button 
+          className="btn btn-primary" 
+          onClick={handleAddPlayer} 
+          style={{ marginBottom: '1rem' }}
+          disabled={disabled}
+        >
           <i className="fas fa-user-plus"></i> Add Player
         </button>
         

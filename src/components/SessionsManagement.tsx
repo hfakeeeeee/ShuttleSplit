@@ -16,6 +16,7 @@ interface SessionsManagementProps {
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   isExpanded?: boolean;
   onToggle?: (isExpanded: boolean) => void;
+  disabled?: boolean;
 }
 
 const SessionsManagement: React.FC<SessionsManagementProps> = ({
@@ -29,7 +30,8 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
   onUpdateSessionWaterFee,
   onShowNotification,
   isExpanded,
-  onToggle
+  onToggle,
+  disabled = false
 }) => {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [showParticipantsModal, setShowParticipantsModal] = useState(false);
@@ -102,7 +104,7 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
       <CollapsibleSection
         title="Playing Days"
         icon="fas fa-calendar-alt"
-        className="sessions-section"
+        className={`sessions-section ${disabled ? 'disabled-section' : ''}`}
         defaultExpanded={true}
         isExpanded={isExpanded !== undefined ? isExpanded : localExpanded}
         onToggle={handleToggle}
@@ -114,8 +116,13 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               className="date-input"
+              disabled={disabled}
             />
-            <button className="btn btn-primary" onClick={handleAddSession}>
+            <button 
+              className="btn btn-primary" 
+              onClick={handleAddSession} 
+              disabled={disabled}
+            >
               <i className="fas fa-plus"></i> Add Day
             </button>
           </div>

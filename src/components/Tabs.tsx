@@ -3,11 +3,13 @@ import React from 'react';
 interface TabProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  hasRegisterTab?: boolean;
 }
 
-const Tabs: React.FC<TabProps> = ({ activeTab, onTabChange }) => {
+const Tabs: React.FC<TabProps> = ({ activeTab, onTabChange, hasRegisterTab = false }) => {
   const tabs = [
     { id: 'summary', label: 'Summary & Payment', icon: 'fas fa-chart-line' },
+    ...(hasRegisterTab ? [{ id: 'register', label: 'Register', icon: 'fas fa-clipboard-list' }] : []),
     { id: 'settings', label: 'Settings & Configuration', icon: 'fas fa-cog' }
   ];
 

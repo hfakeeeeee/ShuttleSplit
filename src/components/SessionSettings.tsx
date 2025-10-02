@@ -7,9 +7,10 @@ interface SessionSettingsProps {
   onUpdate: (settings: Partial<SessionSettings>) => void;
   isExpanded?: boolean;
   onToggle?: (isExpanded: boolean) => void;
+  disabled?: boolean;
 }
 
-const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, onUpdate, isExpanded, onToggle }) => {
+const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, onUpdate, isExpanded, onToggle, disabled = false }) => {
   const handleInputChange = (field: keyof SessionSettings, value: string) => {
     const numValue = parseFloat(value) || 0;
     onUpdate({ [field]: numValue });
@@ -34,7 +35,7 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
       onToggle={handleToggle}
     >
       <div className="form-grid">
-        <div className="form-group">
+        <div className={`form-group ${disabled ? 'disabled' : ''}`}>
           <label htmlFor="courtFee">Court Fee per Session</label>
           <div className="input-wrapper">
             <span className="currency">₫</span>
@@ -45,10 +46,11 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
               min="0"
               value={settings.courtFee || ''}
               onChange={(e) => handleInputChange('courtFee', e.target.value)}
+              disabled={disabled}
             />
           </div>
         </div>
-        <div className="form-group">
+        <div className={`form-group ${disabled ? 'disabled' : ''}`}>
           <label htmlFor="shuttlecockPrice">Shuttlecock Price</label>
           <div className="input-wrapper">
             <span className="currency">₫</span>
@@ -59,10 +61,11 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
               min="0"
               value={settings.shuttlecockPrice || ''}
               onChange={(e) => handleInputChange('shuttlecockPrice', e.target.value)}
+              disabled={disabled}
             />
           </div>
         </div>
-        <div className="form-group">
+        <div className={`form-group ${disabled ? 'disabled' : ''}`}>
           <label htmlFor="shuttlecockCount">Number of Shuttlecocks Used</label>
           <div className="input-wrapper">
             <i className="fas fa-feather-alt"></i>
@@ -73,6 +76,7 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
               min="0"
               value={settings.shuttlecockCount || ''}
               onChange={(e) => handleInputChange('shuttlecockCount', e.target.value)}
+              disabled={disabled}
             />
           </div>
         </div>
