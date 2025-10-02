@@ -54,6 +54,13 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
     <section className="card summary-section">
       <h2><i className="fas fa-table"></i> Sheet View</h2>
       
+      <div className="total-summary">
+        <div className="total-revenue">
+          <span className="total-label"><i className="fas fa-money-bill-wave"></i> Total Amount:</span>
+          <span className="total-value">{formatCurrency(totalRevenue)}</span>
+        </div>
+      </div>
+
       <div className="sheet-view-container">
         <table className="cost-sheet">
           <thead>
@@ -103,7 +110,10 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                     </td>
                     <td className="payment-cell">
                       <div className="payment-checkbox" onClick={() => togglePaymentStatus(player)}>
-                        {player.hasPaid && <i className="fas fa-check"></i>}
+                        {player.hasPaid ? 
+                          <i className="fas fa-check-circle payment-paid-icon"></i> : 
+                          <i className="far fa-circle payment-unpaid-icon"></i>
+                        }
                       </div>
                     </td>
                   </tr>

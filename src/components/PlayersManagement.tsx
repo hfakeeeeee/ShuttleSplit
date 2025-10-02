@@ -9,6 +9,7 @@ interface PlayersManagementProps {
   onRemovePlayer: (id: number) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   isExpanded?: boolean;
+  onToggle?: (isExpanded: boolean) => void;
 }
 
 const PlayersManagement: React.FC<PlayersManagementProps> = ({
@@ -17,11 +18,20 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   onUpdatePlayer,
   onRemovePlayer,
   onShowNotification,
-  isExpanded
+  isExpanded,
+  onToggle
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [editingPlayer, setEditingPlayer] = useState<{id: number, name: string} | null>(null);
+  const [localExpanded, setLocalExpanded] = useState(true);
+  
+  const handleToggle = (newState: boolean) => {
+    setLocalExpanded(newState);
+    if (onToggle) {
+      onToggle(newState);
+    }
+  };
 
   const handleAddPlayer = () => {
     setShowAddForm(true);
@@ -86,7 +96,8 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
       icon="fas fa-users"
       className="players-section"
       defaultExpanded={true}
-      isExpanded={isExpanded}
+      isExpanded={isExpanded !== undefined ? isExpanded : localExpanded}
+      onToggle={handleToggle}
     >
       <div>
         <button className="btn btn-primary" onClick={handleAddPlayer} style={{ marginBottom: '1rem' }}>

@@ -24,16 +24,19 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   // Use either controlled or uncontrolled state
   const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
 
-  // Sync with external control
+  // Sync with external control - but only if onToggle is not provided (which means this is fully controlled)
   useEffect(() => {
-    if (externalIsExpanded !== undefined) {
+    if (externalIsExpanded !== undefined && !onToggle) {
       setInternalIsExpanded(externalIsExpanded);
     }
-  }, [externalIsExpanded]);
+  }, [externalIsExpanded, onToggle]);
 
   const toggleExpanded = () => {
     const newState = !isExpanded;
     setInternalIsExpanded(newState);
+    
+    // Always call onToggle if provided - this allows individual sections to be toggled
+    // even when they're also controlled by the expand/collapse all button
     if (onToggle) {
       onToggle(newState);
     }
@@ -41,13 +44,14 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
   return (
     <section className={`card collapsible-section ${className}`}>
-      <div className="section-header collapsible-header" onClick={toggleExpanded}>
-        <h2>
+      <div className="section-header collapsible-header">
+        <h2 onClick={toggleExpanded} style={{ cursor: 'pointer', flex: 1 }}>
           {icon && <i className={icon}></i>}
           {title}
         </h2>
         <button 
           className="btn-toggle" 
+          onClick={toggleExpanded}
           aria-expanded={isExpanded}
           aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
         >

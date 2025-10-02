@@ -33,6 +33,12 @@ const Summary: React.FC<SummaryProps> = ({
   return (
     <section className="card summary-section">
       <h2><i className="fas fa-chart-line"></i> Summary</h2>
+      <div className="total-summary">
+        <div className="total-revenue">
+          <span className="total-label"><i className="fas fa-money-bill-wave"></i> Total Amount:</span>
+          <span className="total-value">{formatCurrency(totalRevenue)}</span>
+        </div>
+      </div>
       <div className="summary-content">
         <div className="summary-grid">
           {playerCosts.map(playerCost => (
@@ -44,6 +50,7 @@ const Summary: React.FC<SummaryProps> = ({
                   </span>
                   <span className="player-total">
                     {formatCurrency(playerCost.totalCost)}
+                    {playerCost.player.hasPaid && <span className="payment-status-badge"></span>}
                   </span>
                 </div>
               </div>

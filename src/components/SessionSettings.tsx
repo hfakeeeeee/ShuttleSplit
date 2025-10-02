@@ -6,12 +6,22 @@ interface SessionSettingsProps {
   settings: SessionSettings;
   onUpdate: (settings: Partial<SessionSettings>) => void;
   isExpanded?: boolean;
+  onToggle?: (isExpanded: boolean) => void;
 }
 
-const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, onUpdate, isExpanded }) => {
+const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, onUpdate, isExpanded, onToggle }) => {
   const handleInputChange = (field: keyof SessionSettings, value: string) => {
     const numValue = parseFloat(value) || 0;
     onUpdate({ [field]: numValue });
+  };
+
+  const [localExpanded, setLocalExpanded] = React.useState(true);
+
+  const handleToggle = (newState: boolean) => {
+    setLocalExpanded(newState);
+    if (onToggle) {
+      onToggle(newState);
+    }
   };
 
   return (
@@ -20,7 +30,8 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
       icon="fas fa-cog"
       className="session-settings"
       defaultExpanded={true}
-      isExpanded={isExpanded}
+      isExpanded={isExpanded !== undefined ? isExpanded : localExpanded}
+      onToggle={handleToggle}
     >
       <div className="form-grid">
         <div className="form-group">

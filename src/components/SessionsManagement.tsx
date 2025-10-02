@@ -15,6 +15,7 @@ interface SessionsManagementProps {
   onUpdateSessionWaterFee: (sessionId: number, waterFee: number) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   isExpanded?: boolean;
+  onToggle?: (isExpanded: boolean) => void;
 }
 
 const SessionsManagement: React.FC<SessionsManagementProps> = ({
@@ -27,13 +28,22 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
   onUpdateSessionAdditionalFee,
   onUpdateSessionWaterFee,
   onShowNotification,
-  isExpanded
+  isExpanded,
+  onToggle
 }) => {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [showParticipantsModal, setShowParticipantsModal] = useState(false);
   const [participantDetailsSession, setParticipantDetailsSession] = useState<Session | null>(null);
   const [showParticipantDetails, setShowParticipantDetails] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+  const [localExpanded, setLocalExpanded] = useState(true);
+  
+  const handleToggle = (newState: boolean) => {
+    setLocalExpanded(newState);
+    if (onToggle) {
+      onToggle(newState);
+    }
+  };
 
   const handleAddSession = () => {
     onAddSession(selectedDate);
@@ -94,7 +104,8 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
         icon="fas fa-calendar-alt"
         className="sessions-section"
         defaultExpanded={true}
-        isExpanded={isExpanded}
+        isExpanded={isExpanded !== undefined ? isExpanded : localExpanded}
+        onToggle={handleToggle}
       >
         <div>
           <div className="add-session-controls" style={{ marginBottom: '1rem' }}>

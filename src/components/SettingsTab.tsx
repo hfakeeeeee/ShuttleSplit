@@ -58,17 +58,34 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   onToggleAppSettings,
   onShowNotification
 }) => {
-  const [allExpanded, setAllExpanded] = useState(true);
+  const [sectionStates, setSectionStates] = useState({
+    sessionSettings: true,
+    players: true,
+    sessions: true
+  });
 
   const toggleAllSections = () => {
-    setAllExpanded(!allExpanded);
+    const areAllExpanded = Object.values(sectionStates).every(Boolean);
+    const newState = !areAllExpanded;
+    setSectionStates({
+      sessionSettings: newState,
+      players: newState,
+      sessions: newState
+    });
+  };
+  
+  const handleSectionToggle = (section: 'sessionSettings' | 'players' | 'sessions', state: boolean) => {
+    setSectionStates(prev => ({
+      ...prev,
+      [section]: state
+    }));
   };
 
   return (
     <div className="tab-content fade-in">
       <div className="tab-header-actions">
         <ExpandCollapseButton 
-          isAllExpanded={allExpanded}
+          isAllExpanded={Object.values(sectionStates).every(Boolean)}
           onClick={toggleAllSections}
         />
       </div>
@@ -77,7 +94,8 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
       <SessionSettingsComponent
         settings={sessionSettings}
         onUpdate={onUpdateSessionSettings}
-        isExpanded={allExpanded}
+        isExpanded={sectionStates.sessionSettings}
+        onToggle={(state) => handleSectionToggle('sessionSettings', state)}
       />
 
       {/* Players Management */}
@@ -87,7 +105,8 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
         onUpdatePlayer={onUpdatePlayer}
         onRemovePlayer={onRemovePlayer}
         onShowNotification={onShowNotification}
-        isExpanded={allExpanded}
+        isExpanded={sectionStates.players}
+        onToggle={(state) => handleSectionToggle('players', state)}
       />
 
       {/* Sessions Management */}
@@ -101,7 +120,8 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
         onUpdateSessionAdditionalFee={onUpdateSessionAdditionalFee}
         onUpdateSessionWaterFee={onUpdateSessionWaterFee}
         onShowNotification={onShowNotification}
-        isExpanded={allExpanded}
+        isExpanded={sectionStates.sessions}
+        onToggle={(state) => handleSectionToggle('sessions', state)}
       />
 
       {/* Settings Modal */}
