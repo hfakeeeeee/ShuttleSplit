@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/ShuttleSplit/static/css/main.51683fd8.css",
-    "main.js": "/ShuttleSplit/static/js/main.835afb56.js",
+    "main.js": "/ShuttleSplit/static/js/main.8df034a8.js",
     "index.html": "/ShuttleSplit/index.html",
     "main.51683fd8.css.map": "/ShuttleSplit/static/css/main.51683fd8.css.map",
-    "main.835afb56.js.map": "/ShuttleSplit/static/js/main.835afb56.js.map"
+    "main.8df034a8.js.map": "/ShuttleSplit/static/js/main.8df034a8.js.map"
   },
   "entrypoints": [
     "static/css/main.51683fd8.css",
-    "static/js/main.835afb56.js"
+    "static/js/main.8df034a8.js"
   ]
 }
