@@ -5,9 +5,10 @@ import CollapsibleSection from './CollapsibleSection';
 interface SessionSettingsProps {
   settings: SessionSettings;
   onUpdate: (settings: Partial<SessionSettings>) => void;
+  isExpanded?: boolean;
 }
 
-const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, onUpdate }) => {
+const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, onUpdate, isExpanded }) => {
   const handleInputChange = (field: keyof SessionSettings, value: string) => {
     const numValue = parseFloat(value) || 0;
     onUpdate({ [field]: numValue });
@@ -19,6 +20,7 @@ const SessionSettingsComponent: React.FC<SessionSettingsProps> = ({ settings, on
       icon="fas fa-cog"
       className="session-settings"
       defaultExpanded={true}
+      isExpanded={isExpanded}
     >
       <div className="form-grid">
         <div className="form-group">

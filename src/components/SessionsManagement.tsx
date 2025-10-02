@@ -14,6 +14,7 @@ interface SessionsManagementProps {
   onUpdateSessionAdditionalFee: (sessionId: number, additionalFee: number) => void;
   onUpdateSessionWaterFee: (sessionId: number, waterFee: number) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
+  isExpanded?: boolean;
 }
 
 const SessionsManagement: React.FC<SessionsManagementProps> = ({
@@ -25,10 +26,13 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
   onUpdateSessionParticipants,
   onUpdateSessionAdditionalFee,
   onUpdateSessionWaterFee,
-  onShowNotification
+  onShowNotification,
+  isExpanded
 }) => {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [showParticipantsModal, setShowParticipantsModal] = useState(false);
+  const [participantDetailsSession, setParticipantDetailsSession] = useState<Session | null>(null);
+  const [showParticipantDetails, setShowParticipantDetails] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
 
   const handleAddSession = () => {
@@ -65,6 +69,18 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
   };
 
   const getParticipantNames = (participantIds: number[]) => {
+    const filteredPlayers = players.filter(player => participantIds.includes(player.id));
+    
+    // For any number of participants, we'll just show the count
+    // This avoids text overflow completely
+    if (filteredPlayers.length > 0) {
+      return `${filteredPlayers.length} players`;
+    }
+    
+    return 'No participants';
+  };
+  
+  const getFullParticipantList = (participantIds: number[]) => {
     return players
       .filter(player => participantIds.includes(player.id))
       .map(player => player.name)
@@ -78,6 +94,7 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
         icon="fas fa-calendar-alt"
         className="sessions-section"
         defaultExpanded={true}
+        isExpanded={isExpanded}
       >
         <div>
           <div className="add-session-controls" style={{ marginBottom: '1rem' }}>
@@ -104,9 +121,19 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
                     <div>
                       <div className="session-title">{session.name}</div>
                       <div className="session-date">{session.date}</div>
-                      <div className={`session-participants ${session.participants.length > 0 ? 'has-participants' : ''}`}>
+                      <div 
+                        className={`session-participants ${session.participants.length > 0 ? 'has-participants' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (session.participants.length > 0) {
+                            setParticipantDetailsSession(session);
+                            setShowParticipantDetails(true);
+                          }
+                        }}
+                        style={{ cursor: session.participants.length > 0 ? 'pointer' : 'default' }}
+                      >
                         {session.participants.length > 0 
-                          ? `${session.participants.length} players: ${getParticipantNames(session.participants)}`
+                          ? getParticipantNames(session.participants)
                           : 'No participants selected'
                         }
                       </div>
@@ -186,6 +213,42 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
         onClose={() => setShowParticipantsModal(false)}
         onSave={handleSaveParticipants}
       />
+
+      {/* Participant Details Modal */}
+      {showParticipantDetails && participantDetailsSession && (
+        <div className="modal-overlay" onClick={() => setShowParticipantDetails(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><i className="fas fa-users"></i> Participants for {participantDetailsSession.name}</h3>
+              <button className="close-btn" onClick={() => setShowParticipantDetails(false)}>
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="participant-details">
+                <div className="participant-count">
+                  {participantDetailsSession.participants.length} players
+                </div>
+                <div className="participant-list-full">
+                  {players
+                    .filter(player => participantDetailsSession.participants.includes(player.id))
+                    .map((player, index) => (
+                      <div key={player.id} className="participant-detail-item">
+                        <span className="participant-number">{index + 1}.</span>
+                        <span className="participant-name">{player.name}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowParticipantDetails(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

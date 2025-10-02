@@ -84,7 +84,7 @@ const SessionParticipantsModal: React.FC<SessionParticipantsModalProps> = ({
             {players.map(player => (
               <div
                 key={player.id}
-                className={`participant-item ${selectedParticipants.includes(player.id) ? 'selected' : ''}`}
+                className={`participant-item participant-select-item ${selectedParticipants.includes(player.id) ? 'selected' : ''}`}
                 onClick={() => handleToggleParticipant(player.id)}
               >
                 <div className="participant-checkbox">
@@ -95,13 +95,7 @@ const SessionParticipantsModal: React.FC<SessionParticipantsModalProps> = ({
                   />
                 </div>
                 <div className="participant-info">
-                  <div className="participant-name">{player.name}</div>
-                  <div className={`payment-status`}>
-                    {player.hasPaid ? 
-                      <span className="paid-status"><i className="fas fa-check-circle"></i> Paid</span> : 
-                      <span className="unpaid-status"><i className="fas fa-times-circle"></i> Unpaid</span>
-                    }
-                  </div>
+                  <span className="participant-name">{player.name}</span>
                 </div>
                 <div className="participant-status">
                   {selectedParticipants.includes(player.id) ? (

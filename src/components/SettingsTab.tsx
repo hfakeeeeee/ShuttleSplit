@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Player, Session, SessionSettings, AppSettings } from '../types';
 
 // Components
@@ -6,6 +6,7 @@ import SessionSettingsComponent from './SessionSettings';
 import PlayersManagement from './PlayersManagement';
 import SessionsManagement from './SessionsManagement';
 import SettingsModal from './SettingsModal';
+import ExpandCollapseButton from './ExpandCollapseButton';
 
 interface SettingsTabProps {
   // Session Settings
@@ -57,12 +58,26 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   onToggleAppSettings,
   onShowNotification
 }) => {
+  const [allExpanded, setAllExpanded] = useState(true);
+
+  const toggleAllSections = () => {
+    setAllExpanded(!allExpanded);
+  };
+
   return (
     <div className="tab-content fade-in">
+      <div className="tab-header-actions">
+        <ExpandCollapseButton 
+          isAllExpanded={allExpanded}
+          onClick={toggleAllSections}
+        />
+      </div>
+      
       {/* Session Settings */}
       <SessionSettingsComponent
         settings={sessionSettings}
         onUpdate={onUpdateSessionSettings}
+        isExpanded={allExpanded}
       />
 
       {/* Players Management */}
@@ -72,6 +87,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
         onUpdatePlayer={onUpdatePlayer}
         onRemovePlayer={onRemovePlayer}
         onShowNotification={onShowNotification}
+        isExpanded={allExpanded}
       />
 
       {/* Sessions Management */}
@@ -85,6 +101,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
         onUpdateSessionAdditionalFee={onUpdateSessionAdditionalFee}
         onUpdateSessionWaterFee={onUpdateSessionWaterFee}
         onShowNotification={onShowNotification}
+        isExpanded={allExpanded}
       />
 
       {/* Settings Modal */}

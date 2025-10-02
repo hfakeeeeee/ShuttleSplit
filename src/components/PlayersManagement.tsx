@@ -8,6 +8,7 @@ interface PlayersManagementProps {
   onUpdatePlayer?: (id: number, updates: Partial<Player>) => void; // Optional for backward compatibility
   onRemovePlayer: (id: number) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
+  isExpanded?: boolean;
 }
 
 const PlayersManagement: React.FC<PlayersManagementProps> = ({
@@ -15,7 +16,8 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   onAddPlayer,
   onUpdatePlayer,
   onRemovePlayer,
-  onShowNotification
+  onShowNotification,
+  isExpanded
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [playerName, setPlayerName] = useState('');
@@ -84,6 +86,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
       icon="fas fa-users"
       className="players-section"
       defaultExpanded={true}
+      isExpanded={isExpanded}
     >
       <div>
         <button className="btn btn-primary" onClick={handleAddPlayer} style={{ marginBottom: '1rem' }}>

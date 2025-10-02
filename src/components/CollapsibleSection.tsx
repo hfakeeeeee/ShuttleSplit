@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -6,6 +6,8 @@ interface CollapsibleSectionProps {
   children: React.ReactNode;
   defaultExpanded?: boolean;
   className?: string;
+  isExpanded?: boolean;
+  onToggle?: (isExpanded: boolean) => void;
 }
 
 const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
@@ -13,12 +15,28 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   icon,
   children,
   defaultExpanded = true,
-  className = ''
+  className = '',
+  isExpanded: externalIsExpanded,
+  onToggle
 }) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [internalIsExpanded, setInternalIsExpanded] = useState(defaultExpanded);
+  
+  // Use either controlled or uncontrolled state
+  const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
+
+  // Sync with external control
+  useEffect(() => {
+    if (externalIsExpanded !== undefined) {
+      setInternalIsExpanded(externalIsExpanded);
+    }
+  }, [externalIsExpanded]);
 
   const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
+    const newState = !isExpanded;
+    setInternalIsExpanded(newState);
+    if (onToggle) {
+      onToggle(newState);
+    }
   };
 
   return (

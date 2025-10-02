@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PlayerCost, AppSettings, Session, Player } from '../types';
 import Summary from './Summary';
 import { formatCurrency } from '../utils';
@@ -26,34 +26,6 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
       onUpdatePlayer(player.id, { hasPaid: !player.hasPaid });
     }
   };
-  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
-  
-  const handleImageClick = (imageSrc: string) => {
-    setZoomedImage(imageSrc);
-  };
-
-  const handleCloseZoom = () => {
-    setZoomedImage(null);
-  };
-
-  // Handle ESC key to close zoom
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && zoomedImage) {
-        handleCloseZoom();
-      }
-    };
-
-    if (zoomedImage) {
-      document.addEventListener('keydown', handleEscKey);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-      document.body.style.overflow = 'unset';
-    };
-  }, [zoomedImage]);
 
   if (players.length === 0 || sessions.length === 0) {
     return (
@@ -87,13 +59,13 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
           <thead>
             <tr>
               <th className="player-header">Player</th>
-              <th className="payment-header">Paid</th>
               {sessions.map((session, index) => (
                 <th key={session.id} className="session-header">
                   {session.name}
                 </th>
               ))}
               <th className="total-header">Total</th>
+              <th className="payment-header">Paid</th>
             </tr>
           </thead>
           <tbody>
@@ -106,11 +78,6 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                         <span className="player-name">
                           <i className="fas fa-user"></i> {player.name}
                         </span>
-                      </div>
-                    </td>
-                    <td className="payment-cell">
-                      <div className="payment-checkbox" onClick={() => togglePaymentStatus(player)}>
-                        {player.hasPaid && <i className="fas fa-check"></i>}
                       </div>
                     </td>
                     {sessions.map((session, sessionIndex) => {
@@ -134,6 +101,11 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                         {formatCurrency(playerCost?.totalCost || 0)}
                       </span>
                     </td>
+                    <td className="payment-cell">
+                      <div className="payment-checkbox" onClick={() => togglePaymentStatus(player)}>
+                        {player.hasPaid && <i className="fas fa-check"></i>}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -152,7 +124,6 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                   src={`${process.env.PUBLIC_URL}/images/Bank.jpg`} 
                   alt="Bank Transfer" 
                   className="payment-qr-image" 
-                  onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/images/Bank.jpg`)}
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Bank.jpg`;
                   }}
@@ -168,7 +139,6 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                     src={settings.momoQRImage} 
                     alt="MoMo Transfer" 
                     className="payment-qr-image"
-                    onClick={() => handleImageClick(settings.momoQRImage!)}
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Momo.jpg`;
                     }}
@@ -177,8 +147,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                   <img 
                     src={`${process.env.PUBLIC_URL}/images/Momo.jpg`} 
                     alt="MoMo Transfer" 
-                    className="payment-qr-image" 
-                    onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/images/Momo.jpg`)}
+                    className="payment-qr-image"
                   />
                 )}
               </div>
@@ -187,22 +156,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
         </div>
       )}
 
-      {/* Image Zoom Modal */}
-      {zoomedImage && (
-        <div className="image-zoom-modal" onClick={handleCloseZoom}>
-          <div className="image-zoom-container">
-            <img 
-              src={zoomedImage} 
-              alt="Zoomed QR Code" 
-              className="zoomed-image"
-              onClick={(e) => e.stopPropagation()} 
-            />
-            <button className="close-zoom-btn" onClick={handleCloseZoom}>
-              <i className="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Image zoom removed */}
     </section>
   );
 };
