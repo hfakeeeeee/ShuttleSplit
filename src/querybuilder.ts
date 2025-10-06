@@ -2,7 +2,6 @@ import type { RuleGroupType } from 'react-querybuilder'
 
 type Op = 'eq' | 'ne' | 'contains' | 'not_contains'
 
-// map the UI/operator "names" to our semantic ops
 export const OP_MAP: Record<string, Op> = {
   eq: 'eq',
   ne: 'ne',
@@ -11,7 +10,6 @@ export const OP_MAP: Record<string, Op> = {
 }
 
 const isValidFieldName = (f: string) =>
-  // allow letters, digits, underscore, dot, slash, dash (tweak as needed)
   /^[A-Za-z0-9_.\/-]+$/.test(f)
 
 const esc = (s: string) => s.replace(/'/g, "''")
@@ -25,7 +23,6 @@ const renderContains = (field: string, value: string, negate: boolean) => {
 }
 
 const normalizeValueForField = (field: string, op: Op, value: string) => {
-  // keep your old baseUrl behavior but only for eq/ne
   if (field === 'baseUrl' && (op === 'eq' || op === 'ne')) {
     return value.replace(/\s+/g, '')
   }
@@ -42,17 +39,13 @@ export function buildSearchQuery(
       const field: string = r?.field
       const rawOp: string = r?.operator
       const rawVal: string | undefined = r?.value
-
       if (!field || !rawOp || rawVal == null || rawVal === '') return ''
-
-      if (!isValidFieldName(field)) return '' // reject dangerous/invalid field names
+      if (!isValidFieldName(field)) return ''
 
       const op = OP_MAP[rawOp]
-      if (!op) return '' // unknown operator
+      if (!op) return ''
 
-      const normalizedVal = normalizeValueForField(field, op, String(rawVal))
-      const safeVal = esc(normalizedVal)
-
+      const safeVal = esc(normalizeValueForField(field, op, String(rawVal)))
       switch (op) {
         case 'eq':
         case 'ne':
@@ -61,13 +54,10 @@ export function buildSearchQuery(
           return renderContains(field, safeVal, false)
         case 'not_contains':
           return renderContains(field, safeVal, true)
-        default:
-          return ''
       }
     })
     .filter(Boolean)
 
-  // join cleanly with the group combinator ('and' | 'or')
   const combinator = filter.combinator ? ` ${filter.combinator} ` : ' and '
   return parts.join(combinator)
 }
