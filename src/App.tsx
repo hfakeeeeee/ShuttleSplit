@@ -14,6 +14,7 @@ import RegisterTab from './components/RegisterTab';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
 import { ThemeProvider } from './components/ThemeProvider';
+import { AuthProvider } from './components/AuthContext';
 
 // Hooks
 import { usePlayers, useSessions, useSettings, useSessionSettings, useNotification } from './hooks';
@@ -89,9 +90,10 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="App">
-        <div className="container">
-          <Header />
+      <AuthProvider>
+        <div className="App">
+          <div className="container">
+            <Header />
 
           {/* Tabs Navigation */}
           <Tabs activeTab={activeTab} onTabChange={handleTabChange} hasRegisterTab={true} />
@@ -149,6 +151,7 @@ const App: React.FC = () => {
         </div>
         <Footer />
       </div>
+      </AuthProvider>
     </ThemeProvider>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PlayerCost, AppSettings, Session, Player } from '../types';
 import Summary from './Summary';
 import { formatCurrency } from '../utils';
+import { useAuth } from './AuthContext';
 
 interface SummaryTabProps {
   playerCosts: PlayerCost[];
@@ -21,7 +22,20 @@ interface SheetViewProps {
 }
 
 const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings, onUpdatePlayer }) => {
-  const togglePaymentStatus = (player: Player) => {
+  // Use shared auth context instead of local state
+  const { isLocked } = useAuth();
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  
+  const attemptTogglePaymentStatus = (player: Player) => {
+    if (isLocked) {
+      // Don't show password modal, just inform the user
+      alert("Settings are locked. Please unlock in the Settings tab first.");
+    } else {
+      updatePlayerPaymentStatus(player);
+    }
+  };
+  
+  const updatePlayerPaymentStatus = (player: Player) => {
     if (onUpdatePlayer) {
       onUpdatePlayer(player.id, { hasPaid: !player.hasPaid });
     }
@@ -109,7 +123,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                       </span>
                     </td>
                     <td className="payment-cell">
-                      <div className="payment-checkbox" onClick={() => togglePaymentStatus(player)}>
+                      <div className="payment-checkbox" onClick={() => attemptTogglePaymentStatus(player)}>
                         {player.hasPaid ? 
                           <i className="fas fa-check-circle payment-paid-icon"></i> : 
                           <i className="far fa-circle payment-unpaid-icon"></i>

@@ -7,6 +7,7 @@ import PlayersManagement from './PlayersManagement';
 import SessionsManagement from './SessionsManagement';
 import SettingsModal from './SettingsModal';
 import ExpandCollapseButton from './ExpandCollapseButton';
+import { useAuth } from './AuthContext';
 
 interface SettingsTabProps {
   // Session Settings
@@ -64,12 +65,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
     sessions: true
   });
   
-  const [isLocked, setIsLocked] = useState(true);
+  // Use shared auth context instead of local state
+  const { isLocked, setIsLocked, unlockApp } = useAuth();
   const [password, setPassword] = useState('');
   const [isPasswordError, setIsPasswordError] = useState(false);
-  
-  // Get admin password from environment variables
-  const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
 
   const toggleAllSections = () => {
     const areAllExpanded = Object.values(sectionStates).every(Boolean);
@@ -89,8 +88,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   };
   
   const handleUnlock = () => {
-    if (password === ADMIN_PASSWORD) {
-      setIsLocked(false);
+    if (unlockApp(password)) {
       setIsPasswordError(false);
       onShowNotification('Settings unlocked successfully', 'success');
     } else {

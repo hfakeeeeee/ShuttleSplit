@@ -3,6 +3,7 @@ import { Session, Player } from '../types';
 import CollapsibleSection from './CollapsibleSection';
 import { db } from '../firebase';
 import { collection, addDoc, deleteDoc, doc, updateDoc, getDocs, query, where, Timestamp } from 'firebase/firestore';
+import { useAuth } from './AuthContext';
 
 // Constants
 const MAX_REGULAR_PLAYERS = 13; // Maximum number of regular registered players
@@ -32,6 +33,11 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
   const [plannedSessions, setPlannedSessions] = useState<PlannedSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Use shared auth context instead of local state
+  const { isLocked } = useAuth();
+  const [currentAction, setCurrentAction] = useState<'add' | 'delete' | null>(null);
+  const [sessionToDelete, setSessionToDelete] = useState<{id: string, name: string} | null>(null);
   
   // Memoize players data to prevent unnecessary re-renders
   const memoizedPlayers = React.useMemo(() => players, [players]);
@@ -67,6 +73,21 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Remove dependency to prevent double-loading
 
+  const handleAttemptAddPlannedSession = () => {
+    if (!selectedDate) {
+      onShowNotification('Please select a date', 'error');
+      return;
+    }
+    
+    if (isLocked) {
+      onShowNotification('Settings are locked. Please unlock in the Settings tab first.', 'error');
+      return;
+    }
+    
+    setCurrentAction('add');
+    handleAddPlannedSession();
+  };
+  
   const handleAddPlannedSession = async () => {
     if (!selectedDate) {
       onShowNotification('Please select a date', 'error');
@@ -108,28 +129,39 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
     }
   };
 
-  const handleRemoveSession = async (id: string, name: string) => {
+  const handleAttemptRemoveSession = (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to remove ${name} from the plan?`)) {
-      try {
-        // Update UI immediately for better user experience
-        setPlannedSessions(prev => prev.filter(session => session.id !== id));
-        
-        // Then perform the actual delete operation
-        await deleteDoc(doc(db, 'plannedSessions', id));
-        onShowNotification('Day removed from plan successfully!', 'success');
-      } catch (error) {
-        console.error('Error removing planned session:', error);
-        onShowNotification('Failed to remove planned day', 'error');
-        
-        // If the delete operation failed, reload sessions to restore the UI
-        const plannedSessionsRef = collection(db, 'plannedSessions');
-        const snapshot = await getDocs(plannedSessionsRef);
-        const loadedSessions = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as PlannedSession[];
-        setPlannedSessions(loadedSessions);
+      if (isLocked) {
+        onShowNotification('Settings are locked. Please unlock in the Settings tab first.', 'error');
+        return;
       }
+      
+      setSessionToDelete({ id, name });
+      setCurrentAction('delete');
+      handleRemoveSession(id, name);
+    }
+  };
+  
+  const handleRemoveSession = async (id: string, name: string) => {
+    try {
+      // Update UI immediately for better user experience
+      setPlannedSessions(prev => prev.filter(session => session.id !== id));
+      
+      // Then perform the actual delete operation
+      await deleteDoc(doc(db, 'plannedSessions', id));
+      onShowNotification('Day removed from plan successfully!', 'success');
+    } catch (error) {
+      console.error('Error removing planned session:', error);
+      onShowNotification('Failed to remove planned day', 'error');
+      
+      // If the delete operation failed, reload sessions to restore the UI
+      const plannedSessionsRef = collection(db, 'plannedSessions');
+      const snapshot = await getDocs(plannedSessionsRef);
+      const loadedSessions = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as PlannedSession[];
+      setPlannedSessions(loadedSessions);
     }
   };
 
@@ -195,6 +227,8 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
     setSelectedSession(null);
   };
 
+  // No longer need password handling
+  
   const formatDateString = (dateString?: string) => {
     if (!dateString) return 'Date not set';
     const date = new Date(dateString);
@@ -246,7 +280,7 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
               </div>
               <button
                 className="modern-button modern-button-primary"
-                onClick={handleAddPlannedSession}
+                onClick={handleAttemptAddPlannedSession}
                 disabled={!selectedDate || isSubmitting}
               >
                 {isSubmitting ? (
@@ -350,7 +384,7 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                       </button>
                       <button
                         className="modern-button modern-button-danger delete-button"
-                        onClick={() => handleRemoveSession(session.id as string, session.name)}
+                        onClick={() => handleAttemptRemoveSession(session.id as string, session.name)}
                         title="Delete this day"
                       >
                         <i className="fas fa-trash"></i>
@@ -467,6 +501,8 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
               </div>
             </div>
           )}
+          
+          {/* No need for password modal - using global authentication */}
         </div>
       </CollapsibleSection>
     </div>

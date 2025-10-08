@@ -41,7 +41,12 @@ const Summary: React.FC<SummaryProps> = ({
       </div>
       <div className="summary-content">
         <div className="summary-grid">
-          {playerCosts.map(playerCost => (
+          {playerCosts
+            .filter(playerCost => {
+              // Only include players who have participated in at least one session
+              return playerCost.sessions.some(session => session.participated);
+            })
+            .map(playerCost => (
             <div key={playerCost.player.id} className={`summary-card fade-in ${playerCost.player.hasPaid ? "paid-card" : ""}`}>
               <div className="summary-header">
                 <div className="player-info">
