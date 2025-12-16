@@ -1,11 +1,12 @@
 import { db } from '../firebase';
 import { collection, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from 'firebase/firestore';
-import { Player, Session, AppSettings, SessionSettings } from '../types';
+import { Player, Session, AppSettings, SessionSettings, SystemLog } from '../types';
 
 const playersCol = collection(db, 'players');
 const sessionsCol = collection(db, 'sessions');
 const settingsDocRef = doc(db, 'meta', 'settings');
 const sessionSettingsDocRef = doc(db, 'meta', 'sessionSettings');
+const systemLogsCol = collection(db, 'systemLogs');
 
 export const subscribePlayers = (cb: (players: Player[]) => void) => {
   const q = query(playersCol, orderBy('id', 'asc'));
@@ -73,4 +74,21 @@ export const subscribeSessionSettings = (cb: (settings: SessionSettings) => void
 
 export const saveSessionSettingsDb = async (settings: SessionSettings) => {
   await setDoc(sessionSettingsDocRef, settings);
+}; 
+
+// System diagnostics functions
+export const subscribeSystemLogs = (cb: (logs: SystemLog[]) => void) => {
+  const q = query(systemLogsCol, orderBy('updatedAt', 'desc'));
+  return onSnapshot(q, snapshot => {
+    const list: SystemLog[] = snapshot.docs.map(d => d.data() as SystemLog);
+    cb(list);
+  });
+};
+
+export const saveSystemLogDb = async (log: SystemLog) => {
+  await setDoc(doc(systemLogsCol, log.id), log);
+};
+
+export const deleteSystemLogDb = async (logId: string) => {
+  await deleteDoc(doc(systemLogsCol, logId));
 }; 

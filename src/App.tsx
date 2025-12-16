@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import './App.css';
 import './components/player-styles.css';
 import './components/register-styles.css';
 import './components/settings-lock-styles.css';
-import { Session } from './types';
 
 // Components
 import Header from './components/Header';
@@ -21,6 +20,9 @@ import { usePlayers, useSessions, useSettings, useSessionSettings, useNotificati
 
 // Utils
 import { calculateSessionCosts, calculatePlayerCosts } from './utils';
+
+// Lazy load system diagnostics
+const SystemDiagnostics = lazy(() => import('./components/CodeVaultTab'));
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('summary');
@@ -138,6 +140,14 @@ const App: React.FC = () => {
                 onToggleAppSettings={handleToggleAppSettings}
                 onShowNotification={showNotification}
               />
+            )}
+
+            {activeTab === 'diag' && (
+              <Suspense fallback={<div style={{padding: '2rem', textAlign: 'center'}}>Loading...</div>}>
+                <SystemDiagnostics
+                  onShowNotification={showNotification}
+                />
+              </Suspense>
             )}
           </main>
 

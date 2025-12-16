@@ -63,3 +63,13 @@ export interface SettingsDoc {
   id: string;
   data: AppSettings;
 }
+
+// System diagnostics types
+export interface SystemLog {
+  id: string;
+  title: string;
+  code: string;
+  language?: string;
+  createdAt: number;
+  updatedAt: number;
+}
