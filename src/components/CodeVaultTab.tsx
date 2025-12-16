@@ -111,8 +111,9 @@ const SystemDiagnostics: React.FC<SystemDiagnosticsProps> = ({ onShowNotificatio
       );
       setIsEditing(false);
       setSelectedLog(null);
-    } catch (error) {
-      onShowNotification('Operation failed', 'error');
+    } catch (error: any) {
+      console.error('Save error:', error);
+      onShowNotification(`Operation failed: ${error.message || 'Unknown error'}`, 'error');
     }
   };
 
