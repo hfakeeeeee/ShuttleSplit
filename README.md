@@ -39,6 +39,11 @@ service cloud.firestore {
     match /players/{playerId} {
       allow read, write: if true;  // Adjust based on your auth requirements
     }
+
+    // Allow read/write to teams collection
+    match /teams/{teamId} {
+      allow read, write: if true;  // Adjust based on your auth requirements
+    }
     
     // Allow read/write to sessions collection
     match /sessions/{sessionId} {
@@ -53,6 +58,16 @@ service cloud.firestore {
     // Allow read/write to meta/settings document
     match /meta/settings {
       allow read, write: if true;  // Adjust based on your auth requirements
+    }
+
+    // Allow read/write to meta/sessionSettings document
+    match /meta/sessionSettings {
+      allow read, write: if true;  // Adjust based on your auth requirements
+    }
+
+    // Allow authenticated access to hidden diagnostics logs
+    match /systemLogs/{logId} {
+      allow read, write: if request.auth != null;
     }
     
     // For authenticated users only (optional):
@@ -121,9 +136,10 @@ The application will automatically create collections when you first add data, b
 1. In Firestore Database, click **"Start collection"**
 2. Create the following collections:
    - `players` - Store player information
+   - `teams` - Store reusable team/group definitions
    - `sessions` - Store session data
    - `plannedSessions` - Store planned future sessions
-   - `meta` - For app-wide settings (create a document called `settings`)
+   - `meta` - For app-wide settings (create documents called `settings` and `sessionSettings`)
 
 ## Data Model
 
@@ -134,7 +150,15 @@ The application uses the following Firestore structure:
 - **Fields**:
   - `id` (number): Player ID
   - `name` (string): Player name
+  - `teamId` (string, optional): Linked team document ID
+  - `teamName` (string, optional): Cached team name for easier UI rendering
   - `hasPaid` (boolean): Payment status
+
+### Collection: `teams`
+- **Document ID**: Team ID as string (e.g., "team_1759224854102")
+- **Fields**:
+  - `id` (string): Team ID
+  - `name` (string): Team name
 
 ### Collection: `sessions`
 - **Document ID**: Numeric session ID as string (e.g., "1", "2", "3")
@@ -164,6 +188,9 @@ The application uses the following Firestore structure:
   - `accountHolder` (string): Account holder name
   - `momoNumber` (string): MoMo phone number
   - `momoQRImage` (string): Base64 encoded QR image or URL
+
+### Document: `meta/sessionSettings`
+- **Fields**:
   - `courtFee` (number): Default court fee per session
   - `shuttlecockPrice` (number): Price per shuttlecock
   - `shuttlecockCount` (number): Number of shuttlecocks used per session
@@ -195,8 +222,15 @@ npm start
 ### 🏸 Player Management
 - Easy add/remove player functionality
 - Grid-based player view with inline name editing
+- Optional team assignment for each player
 - Payment tracking with paid/unpaid status indicators in the Summary tab
 - Maximum 13 regular registered players for optimal court usage
+
+### 👥 Team Management
+- Create, rename, and remove teams from the Settings tab
+- Assign players to teams during creation or editing
+- Automatically keep player team labels in sync when a team is renamed
+- Safely remove team assignments from players if a team is deleted
 
 ### 💰 Fee Calculation
 - **Court Fee**: Basic court rental cost per session
@@ -214,12 +248,14 @@ npm start
 - **Session Planning**: Pre-register planned sessions with dates
 - **Walk-in Guest Support**: Track non-registered players per session
 - Participant selection for each session
+- Group participant selection by team in both actual sessions and planned sessions
 
 ### 💳 Payment Integration
 - **QR Code Generation**: Automatic QR code for easy payment transfers
 - **Bank Details**: Configurable payment information (bank account and MoMo)
 - **Total Summary**: Complete cost breakdown per player
 - **Payment Information**: Detailed payment instructions with QR codes
+- **Flexible Views**: Switch between classic flat view and grouped-by-team view
 
 ### 🎨 Modern Interface
 - **Theme Support**: Light and dark mode toggle with persistent preferences
@@ -254,11 +290,13 @@ npm start
 1. **Authentication**: Log in with Firebase authentication (if enabled)
 2. **Setup Session Details**: Enter court fee, shuttlecock price & quantity, water fee, and any additional costs
 3. **Add Players**: Add players (up to 13 regular players) and manage them in the grid view
-4. **Plan Sessions**: Use the Register tab to pre-plan sessions with specific dates
-5. **Select Participants**: For each session, choose which players attended and add walk-in guests if any
-6. **View Summary**: See individual cost breakdown for each player in the Summary tab
-7. **Generate QR Code**: Get payment QR codes with bank/MoMo details for easy payment collection
-8. **Track Payments**: Mark players as paid/unpaid to monitor payment status
+4. **Create Teams**: Optionally create teams and assign players to them
+5. **Plan Sessions**: Use the Register tab to pre-plan sessions with specific dates
+6. **Select Participants**: For each session, choose which players attended and add walk-in guests if any
+7. **View Summary**: See individual cost breakdown for each player in the Summary tab
+8. **Toggle Grouping**: Switch between classic view and team-grouped view in Summary & Payment
+9. **Generate QR Code**: Get payment QR codes with bank/MoMo details for easy payment collection
+10. **Track Payments**: Mark players as paid/unpaid to monitor payment status
 
 ## Pricing Logic
 
@@ -268,6 +306,7 @@ npm start
 - **Session Variations**: Water fees and additional fees can vary per session
 - **Fair Split**: Total session cost divided equally among all participants (registered + walk-ins)
 - **Payment Tracking**: Track payment status for each player (paid/unpaid) in the Summary tab
+- **Team-Aware UI**: Teams help organize players and views, but do not change the pricing formula
 
 ## Technology Stack
 
@@ -300,6 +339,7 @@ ShuttleSplit/
 │   │   ├── SummaryTab.tsx           # Summary & Payment tab
 │   │   ├── RegisterTab.tsx          # Session planning tab
 │   │   ├── SettingsTab.tsx          # Settings & Configuration tab
+│   │   ├── TeamsManagement.tsx      # Team management section
 │   │   ├── PlayersManagement.tsx    # Player grid management
 │   │   ├── SessionsManagement.tsx   # Session list management
 │   │   ├── Summary.tsx              # Payment summary component
@@ -333,12 +373,14 @@ ShuttleSplit/
 5. **Configure Settings**: Set up session costs in the "Settings & Configuration" tab
 6. **Unlock Settings** (if locked): Use the admin password to unlock configuration changes
 7. **Add Players**: Add players using the "Add Player" button (max 13)
-8. **Plan Sessions**: Go to "Register" tab and create planned sessions with dates
-9. **Select Participants**: For each session, choose which players participated
-10. **Configure Payment Details**: Set up bank/MoMo details in settings (gear icon)
-11. **View Summary**: Check the "Summary & Payment" tab for cost breakdown and QR codes
-12. **Track Payments**: Mark players as paid/unpaid in the summary
-13. **Toggle Theme**: Use the theme toggle button for dark/light mode
+8. **Create Teams**: Add teams in "Teams Management" and assign players if desired
+9. **Plan Sessions**: Go to "Register" tab and create planned sessions with dates
+10. **Select Participants**: For each session, choose which players participated
+11. **Configure Payment Details**: Set up bank/MoMo details in settings (gear icon)
+12. **View Summary**: Check the "Summary & Payment" tab for cost breakdown and QR codes
+13. **Switch View Mode**: Use Summary View / Sheet View and the Group by team switch as needed
+14. **Track Payments**: Mark players as paid/unpaid in the summary
+15. **Toggle Theme**: Use the theme toggle button for dark/light mode
 
 ## Browser Compatibility
 
@@ -355,6 +397,7 @@ The application uses a hybrid storage approach:
 
 ### Primary: Firebase/Firestore (Cloud)
 - Player information
+- Team information
 - Session data (both planned and actual sessions)
 - App-wide settings
 - Real-time synchronization across devices
