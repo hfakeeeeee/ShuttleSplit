@@ -6,6 +6,7 @@ interface SummaryProps {
   playerCosts: PlayerCost[];
   sessionsCount: number;
   settings: AppSettings;
+  groupByTeam?: boolean;
   onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
 }
 
@@ -13,10 +14,26 @@ const Summary: React.FC<SummaryProps> = ({
   playerCosts,
   sessionsCount,
   settings,
+  groupByTeam = true,
   onUpdatePlayer
 }) => {
   // Payment status is now managed in the sheet view
   const totalRevenue = playerCosts.reduce((sum, pc) => sum + pc.totalCost, 0);
+  const groupedPlayerCosts = playerCosts
+    .filter(playerCost => playerCost.sessions.some(session => session.participated))
+    .reduce((groups, playerCost) => {
+      const teamName = playerCost.player.teamName || 'No Team';
+      if (!groups[teamName]) {
+        groups[teamName] = [];
+      }
+      groups[teamName].push(playerCost);
+      return groups;
+    }, {} as Record<string, PlayerCost[]>);
+  const teamNames = Object.keys(groupedPlayerCosts).sort((a, b) => {
+    if (a === 'No Team') return 1;
+    if (b === 'No Team') return -1;
+    return a.localeCompare(b);
+  });
 
   if (playerCosts.length === 0) {
     return (
@@ -40,42 +57,78 @@ const Summary: React.FC<SummaryProps> = ({
         </div>
       </div>
       <div className="summary-content">
-        <div className="summary-grid">
-          {playerCosts
-            .filter(playerCost => {
-              // Only include players who have participated in at least one session
-              return playerCost.sessions.some(session => session.participated);
-            })
-            .map(playerCost => (
-            <div key={playerCost.player.id} className={`summary-card fade-in ${playerCost.player.hasPaid ? "paid-card" : ""}`}>
-              <div className="summary-header">
-                <div className="player-info">
-                  <span className="player-summary-name">
-                    <i className="fas fa-user"></i> {playerCost.player.name}
-                  </span>
-                  <span className="player-total">
-                    {formatCurrency(playerCost.totalCost)}
-                    {playerCost.player.hasPaid && <span className="payment-status-badge"></span>}
-                  </span>
-                </div>
+        {groupByTeam ? (
+          teamNames.map(teamName => (
+            <div key={teamName} className="team-summary-group">
+              <div className="team-summary-heading">
+                <i className="fas fa-people-group"></i> {teamName}
               </div>
-              {/* Payment actions removed - now only in Sheet view */}
-              <div className="session-breakdown">
-                {playerCost.sessions.map((session, index) => (
-                  <div key={index} className={`session-item ${!session.participated ? "not-participated" : ""}`}>
-                    <span className="session-name">
-                      {session.sessionName}
-                      {!session.participated && <i className="fas fa-times-circle" style={{ marginLeft: "0.5rem", color: "var(--text-light)" }}></i>}
-                    </span>
-                    <span className="session-amount">
-                      {session.participated ? formatCurrency(session.cost) : "Not joined"}
-                    </span>
+              <div className="summary-grid">
+                {groupedPlayerCosts[teamName].map(playerCost => (
+                  <div key={playerCost.player.id} className={`summary-card fade-in ${playerCost.player.hasPaid ? "paid-card" : ""}`}>
+                    <div className="summary-header">
+                      <div className="player-info">
+                        <span className="player-summary-name">
+                          <i className="fas fa-user"></i> {playerCost.player.name}
+                        </span>
+                        <span className="player-total">
+                          {formatCurrency(playerCost.totalCost)}
+                          {playerCost.player.hasPaid && <span className="payment-status-badge"></span>}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="session-breakdown">
+                      {playerCost.sessions.map((session, index) => (
+                        <div key={index} className={`session-item ${!session.participated ? "not-participated" : ""}`}>
+                          <span className="session-name">
+                            {session.sessionName}
+                            {!session.participated && <i className="fas fa-times-circle" style={{ marginLeft: "0.5rem", color: "var(--text-light)" }}></i>}
+                          </span>
+                          <span className="session-amount">
+                            {session.participated ? formatCurrency(session.cost) : "Not joined"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <div className="summary-grid">
+            {playerCosts
+              .filter(playerCost => playerCost.sessions.some(session => session.participated))
+              .map(playerCost => (
+                <div key={playerCost.player.id} className={`summary-card fade-in ${playerCost.player.hasPaid ? "paid-card" : ""}`}>
+                  <div className="summary-header">
+                    <div className="player-info">
+                      <span className="player-summary-name">
+                        <i className="fas fa-user"></i> {playerCost.player.name}
+                      </span>
+                      <span className="player-total">
+                        {formatCurrency(playerCost.totalCost)}
+                        {playerCost.player.hasPaid && <span className="payment-status-badge"></span>}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="session-breakdown">
+                    {playerCost.sessions.map((session, index) => (
+                      <div key={index} className={`session-item ${!session.participated ? "not-participated" : ""}`}>
+                        <span className="session-name">
+                          {session.sessionName}
+                          {!session.participated && <i className="fas fa-times-circle" style={{ marginLeft: "0.5rem", color: "var(--text-light)" }}></i>}
+                        </span>
+                        <span className="session-amount">
+                          {session.participated ? formatCurrency(session.cost) : "Not joined"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
       </div>
       
       {totalRevenue > 0 && (

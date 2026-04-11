@@ -18,15 +18,29 @@ interface SheetViewProps {
   players: Player[];
   playerCosts: PlayerCost[];
   settings: AppSettings;
+  groupByTeam?: boolean;
   onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
 }
 
-const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings, onUpdatePlayer }) => {
+const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings, groupByTeam = true, onUpdatePlayer }) => {
   // Use shared auth context instead of local state
   const { isLocked } = useAuth();
   const activePlayers = players.filter(player => {
     const playerCost = playerCosts.find(pc => pc.player.id === player.id);
     return playerCost?.sessions.some(session => session.participated) ?? false;
+  });
+  const groupedPlayers = activePlayers.reduce((groups, player) => {
+    const teamName = player.teamName || 'No Team';
+    if (!groups[teamName]) {
+      groups[teamName] = [];
+    }
+    groups[teamName].push(player);
+    return groups;
+  }, {} as Record<string, Player[]>);
+  const teamNames = Object.keys(groupedPlayers).sort((a, b) => {
+    if (a === 'No Team') return 1;
+    if (b === 'No Team') return -1;
+    return a.localeCompare(b);
   });
   
   const attemptTogglePaymentStatus = (player: Player) => {
@@ -66,6 +80,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
   };
 
   const totalRevenue = playerCosts.reduce((sum, pc) => sum + pc.totalCost, 0);
+  const sortedActivePlayers = [...activePlayers].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <section className="card summary-section">
@@ -93,7 +108,61 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
             </tr>
           </thead>
           <tbody>
-              {activePlayers.map(player => {
+            {groupByTeam ? (
+              teamNames.map(teamName => (
+                <React.Fragment key={teamName}>
+                  <tr className="team-group-row">
+                    <td colSpan={sessions.length + 3} className="team-group-cell">
+                      <i className="fas fa-people-group"></i> {teamName}
+                    </td>
+                  </tr>
+                  {groupedPlayers[teamName].map(player => {
+                    const playerCost = playerCosts.find(pc => pc.player.id === player.id);
+                    return (
+                      <tr key={player.id} className={`player-row ${player.hasPaid ? 'paid-row' : ''}`}>
+                        <td className="player-cell">
+                          <div className="player-info">
+                            <span className="player-name">
+                              <i className="fas fa-user"></i> {player.name}
+                            </span>
+                          </div>
+                        </td>
+                        {sessions.map((session, sessionIndex) => {
+                          const sessionCost = getPlayerSessionCost(player.id, sessionIndex);
+                          const participated = sessionCost?.participated ?? false;
+                          
+                          return (
+                            <td key={session.id} className={`session-cell ${participated ? 'participated' : 'not-participated'}`}>
+                              {participated ? (
+                                <span className="cost-amount">
+                                  {formatCurrency(sessionCost?.cost || 0)}
+                                </span>
+                              ) : (
+                                <span className="not-joined">-</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                        <td className="total-cell">
+                          <span className="total-amount">
+                            {formatCurrency(playerCost?.totalCost || 0)}
+                          </span>
+                        </td>
+                        <td className="payment-cell">
+                          <div className="payment-checkbox" onClick={() => attemptTogglePaymentStatus(player)}>
+                            {player.hasPaid ? 
+                              <i className="fas fa-check-circle payment-paid-icon"></i> : 
+                              <i className="far fa-circle payment-unpaid-icon"></i>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </React.Fragment>
+              ))
+            ) : (
+              sortedActivePlayers.map(player => {
                 const playerCost = playerCosts.find(pc => pc.player.id === player.id);
                 return (
                   <tr key={player.id} className={`player-row ${player.hasPaid ? 'paid-row' : ''}`}>
@@ -135,7 +204,8 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
                     </td>
                   </tr>
                 );
-              })}
+              })
+            )}
             </tbody>
           </table>
         </div>
@@ -197,6 +267,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
   onUpdatePlayer
 }) => {
   const [viewMode, setViewMode] = useState<'summary' | 'sheet'>('summary');
+  const [groupByTeam, setGroupByTeam] = useState(true);
 
   return (
     <div className="tab-content fade-in">
@@ -218,11 +289,26 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
         </div>
       </div>
 
+      <div className="view-options-row">
+        <label className="view-switch">
+          <input
+            type="checkbox"
+            checked={groupByTeam}
+            onChange={(e) => setGroupByTeam(e.target.checked)}
+          />
+          <span className="view-switch-track">
+            <span className="view-switch-thumb"></span>
+          </span>
+          <span className="view-switch-label">Group by team</span>
+        </label>
+      </div>
+
       {viewMode === 'summary' ? (
         <Summary
           playerCosts={playerCosts}
           sessionsCount={sessionsCount}
           settings={settings}
+          groupByTeam={groupByTeam}
           onUpdatePlayer={onUpdatePlayer}
         />
       ) : (
@@ -231,6 +317,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
           players={players}
           playerCosts={playerCosts}
           settings={settings}
+          groupByTeam={groupByTeam}
           onUpdatePlayer={onUpdatePlayer}
         />
       )}

@@ -56,6 +56,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: color 0.3s ease, background 0.3s ease;
+  overflow-x: hidden;
 }
 
 [data-theme="dark"] body {
@@ -328,8 +329,9 @@ body {
 }
 
 .collapsible-content.expanded {
-  max-height: 2000px; /* Arbitrary large height */
+  max-height: 12000px; /* Large enough for long management lists */
   opacity: 1;
+  overflow: hidden;
 }
 
 [data-theme="dark"] .btn-toggle {
@@ -369,12 +371,15 @@ body {
 
 .App {
   text-align: left;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  overflow-x: hidden;
 }
 
 /* Header Styles */
@@ -904,9 +909,38 @@ input:focus, select:focus {
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+  align-items: start;
+}
+
+.summary-section,
+.summary-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.team-summary-group {
+  margin-bottom: 1.75rem;
+}
+
+.team-summary-heading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--primary-color);
+  font-weight: 700;
+  line-height: 1;
+  min-height: 42px;
+  white-space: nowrap;
 }
 
 .summary-card {
@@ -1624,6 +1658,8 @@ input:focus, select:focus {
 
 .tab-content {
   min-height: 400px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Expand/Collapse All Button */
@@ -1994,6 +2030,63 @@ input:focus, select:focus {
   box-shadow: var(--shadow-sm);
 }
 
+.view-options-row {
+  display: flex;
+  justify-content: center;
+  margin-top: -0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.view-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.view-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.view-switch-track {
+  width: 50px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  transition: all 0.25s ease;
+}
+
+.view-switch-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease;
+}
+
+.view-switch input:checked + .view-switch-track {
+  background: rgba(37, 99, 235, 0.9);
+  border-color: rgba(37, 99, 235, 0.9);
+}
+
+.view-switch input:checked + .view-switch-track .view-switch-thumb {
+  transform: translateX(22px);
+}
+
+.view-switch-label {
+  line-height: 1;
+}
+
 /* Sheet View Styles */
 .sheet-view-container {
   overflow-x: auto;
@@ -2001,6 +2094,8 @@ input:focus, select:focus {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cost-sheet {
@@ -2086,6 +2181,16 @@ input:focus, select:focus {
   align-items: center;
   gap: 0.75rem; /* Increased spacing between icon and name */
   font-weight: 500;
+}
+
+.team-group-row td.team-group-cell {
+  padding: 0.8rem 1rem;
+  text-align: center;
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--primary-color);
+  font-weight: 700;
+  border-top: 1px solid rgba(59, 130, 246, 0.15);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
 }
 
 /* Payment checkbox and row styles */

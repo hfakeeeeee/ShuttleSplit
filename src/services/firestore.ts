@@ -9,6 +9,12 @@ const settingsDocRef = doc(db, 'meta', 'settings');
 const sessionSettingsDocRef = doc(db, 'meta', 'sessionSettings');
 const systemLogsCol = collection(db, 'systemLogs');
 
+const stripUndefined = <T extends Record<string, unknown>>(data: T): Partial<T> => {
+  return Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined)
+  ) as Partial<T>;
+};
+
 export const subscribePlayers = (cb: (players: Player[]) => void) => {
   const q = query(playersCol, orderBy('id', 'asc'));
   return onSnapshot(q, snapshot => {
@@ -28,7 +34,7 @@ export const subscribePlayers = (cb: (players: Player[]) => void) => {
 };
 
 export const addPlayerDb = async (player: Player) => {
-  await setDoc(doc(playersCol, String(player.id)), player);
+  await setDoc(doc(playersCol, String(player.id)), stripUndefined(player as unknown as Record<string, unknown>));
 };
 
 export const removePlayerDb = async (playerId: number) => {
