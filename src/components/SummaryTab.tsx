@@ -25,6 +25,10 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
   // Use shared auth context instead of local state
   const { isLocked } = useAuth();
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const activePlayers = players.filter(player => {
+    const playerCost = playerCosts.find(pc => pc.player.id === player.id);
+    return playerCost?.sessions.some(session => session.participated) ?? false;
+  });
   
   const attemptTogglePaymentStatus = (player: Player) => {
     if (isLocked) {
@@ -41,7 +45,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
     }
   };
 
-  if (players.length === 0 || sessions.length === 0) {
+  if (activePlayers.length === 0 || sessions.length === 0) {
     return (
       <section className="card summary-section">
         <h2><i className="fas fa-table"></i> Sheet View</h2>
@@ -90,7 +94,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
             </tr>
           </thead>
           <tbody>
-              {players.map(player => {
+              {activePlayers.map(player => {
                 const playerCost = playerCosts.find(pc => pc.player.id === player.id);
                 return (
                   <tr key={player.id} className={`player-row ${player.hasPaid ? 'paid-row' : ''}`}>
