@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Player, Session, AppSettings, SessionSettings } from './types';
-import { formatCurrency } from './utils';
-import { subscribePlayers, addPlayerDb, removePlayerDb, subscribeSessions, setSessionDb, deleteSessionDb, subscribeSettings, saveSettingsDb, subscribeSessionSettings, saveSessionSettingsDb } from './services/firestore';
+import { Player, Session, AppSettings, SessionSettings, Team } from './types';
+import { subscribePlayers, addPlayerDb, removePlayerDb, subscribeSessions, setSessionDb, deleteSessionDb, subscribeSettings, saveSettingsDb, subscribeSessionSettings, saveSessionSettingsDb, subscribeTeams, saveTeamDb, deleteTeamDb } from './services/firestore';
 
 export const usePlayers = () => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -11,11 +10,17 @@ export const usePlayers = () => {
     return () => unsub();
   }, []);
 
-  const addPlayer = async (name: string) => {
+  const addPlayer = async (name: string, team?: Team | null) => {
     if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
       throw new Error('Player with this name already exists');
     }
-    const newPlayer: Player = { id: Date.now(), name, hasPaid: false };
+    const newPlayer: Player = {
+      id: Date.now(),
+      name,
+      teamId: team?.id,
+      teamName: team?.name,
+      hasPaid: false
+    };
     setPlayers(prev => [...prev, newPlayer]);
     await addPlayerDb(newPlayer);
   };
@@ -33,6 +38,65 @@ export const usePlayers = () => {
   };
 
   return { players, addPlayer, updatePlayer, removePlayer };
+};
+
+export const useTeams = (players: Player[], updatePlayer: (id: number, updates: Partial<Player>) => Promise<void>) => {
+  const [teams, setTeams] = useState<Team[]>([]);
+
+  useEffect(() => {
+    const unsub = subscribeTeams(setTeams);
+    return () => unsub();
+  }, []);
+
+  const addTeam = async (name: string) => {
+    if (teams.some(team => team.name.toLowerCase() === name.toLowerCase())) {
+      throw new Error('Team with this name already exists');
+    }
+
+    const newTeam: Team = {
+      id: `team_${Date.now()}`,
+      name
+    };
+
+    setTeams(prev => [...prev, newTeam].sort((a, b) => a.name.localeCompare(b.name)));
+    await saveTeamDb(newTeam);
+  };
+
+  const updateTeam = async (id: string, updates: Partial<Team>) => {
+    const currentTeam = teams.find(team => team.id === id);
+    if (!currentTeam) {
+      throw new Error('Team not found');
+    }
+
+    const nextName = (updates.name ?? currentTeam.name).trim();
+    if (teams.some(team => team.id !== id && team.name.toLowerCase() === nextName.toLowerCase())) {
+      throw new Error('Team with this name already exists');
+    }
+
+    const updatedTeam: Team = { ...currentTeam, ...updates, name: nextName };
+    setTeams(prev => prev.map(team => team.id === id ? updatedTeam : team).sort((a, b) => a.name.localeCompare(b.name)));
+    await saveTeamDb(updatedTeam);
+
+    await Promise.all(
+      players
+        .filter(player => player.teamId === id)
+        .map(player => updatePlayer(player.id, { teamId: id, teamName: updatedTeam.name }))
+    );
+  };
+
+  const removeTeam = async (id: string) => {
+    setTeams(prev => prev.filter(team => team.id !== id));
+
+    await Promise.all(
+      players
+        .filter(player => player.teamId === id)
+        .map(player => updatePlayer(player.id, { teamId: undefined, teamName: undefined }))
+    );
+
+    await deleteTeamDb(id);
+  };
+
+  return { teams, addTeam, updateTeam, removeTeam };
 };
 
 export const useSessions = () => {

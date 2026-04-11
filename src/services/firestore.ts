@@ -1,8 +1,9 @@
 import { db } from '../firebase';
 import { collection, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from 'firebase/firestore';
-import { Player, Session, AppSettings, SessionSettings, SystemLog } from '../types';
+import { Player, Session, AppSettings, SessionSettings, SystemLog, Team } from '../types';
 
 const playersCol = collection(db, 'players');
+const teamsCol = collection(db, 'teams');
 const sessionsCol = collection(db, 'sessions');
 const settingsDocRef = doc(db, 'meta', 'settings');
 const sessionSettingsDocRef = doc(db, 'meta', 'sessionSettings');
@@ -17,6 +18,8 @@ export const subscribePlayers = (cb: (players: Player[]) => void) => {
       return {
         id: data.id,
         name: data.name,
+        teamId: data.teamId,
+        teamName: data.teamName,
         hasPaid: data.hasPaid || false
       } as Player;
     });
@@ -30,6 +33,22 @@ export const addPlayerDb = async (player: Player) => {
 
 export const removePlayerDb = async (playerId: number) => {
   await deleteDoc(doc(playersCol, String(playerId)));
+};
+
+export const subscribeTeams = (cb: (teams: Team[]) => void) => {
+  const q = query(teamsCol, orderBy('name', 'asc'));
+  return onSnapshot(q, snapshot => {
+    const list: Team[] = snapshot.docs.map(d => d.data() as Team);
+    cb(list);
+  });
+};
+
+export const saveTeamDb = async (team: Team) => {
+  await setDoc(doc(teamsCol, team.id), team);
+};
+
+export const deleteTeamDb = async (teamId: string) => {
+  await deleteDoc(doc(teamsCol, teamId));
 };
 
 export const subscribeSessions = (cb: (sessions: Session[]) => void) => {

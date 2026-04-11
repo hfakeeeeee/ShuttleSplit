@@ -24,7 +24,6 @@ interface SheetViewProps {
 const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings, onUpdatePlayer }) => {
   // Use shared auth context instead of local state
   const { isLocked } = useAuth();
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const activePlayers = players.filter(player => {
     const playerCost = playerCosts.find(pc => pc.player.id === player.id);
     return playerCost?.sessions.some(session => session.participated) ?? false;

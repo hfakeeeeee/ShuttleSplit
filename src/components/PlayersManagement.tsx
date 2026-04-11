@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Player } from '../types';
+import { Player, Team } from '../types';
 import CollapsibleSection from './CollapsibleSection';
 
 interface PlayersManagementProps {
   players: Player[];
-  onAddPlayer: (name: string) => void;
-  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void; // Optional for backward compatibility
+  teams: Team[];
+  onAddPlayer: (name: string, team?: Team | null) => Promise<void>;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => Promise<void>; // Optional for backward compatibility
   onRemovePlayer: (id: number) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   isExpanded?: boolean;
@@ -15,6 +16,7 @@ interface PlayersManagementProps {
 
 const PlayersManagement: React.FC<PlayersManagementProps> = ({
   players,
+  teams,
   onAddPlayer,
   onUpdatePlayer,
   onRemovePlayer,
@@ -25,7 +27,8 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [playerName, setPlayerName] = useState('');
-  const [editingPlayer, setEditingPlayer] = useState<{id: number, name: string} | null>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState('');
+  const [editingPlayer, setEditingPlayer] = useState<{id: number, name: string, teamId: string} | null>(null);
   const [localExpanded, setLocalExpanded] = useState(true);
   
   const handleToggle = (newState: boolean) => {
@@ -41,15 +44,17 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
     }
   };
 
-  const handleSavePlayer = () => {
+  const handleSavePlayer = async () => {
     if (!playerName.trim()) {
       onShowNotification('Please enter a player name', 'error');
       return;
     }
 
     try {
-      onAddPlayer(playerName.trim());
+      const selectedTeam = teams.find(team => team.id === selectedTeamId) || null;
+      await onAddPlayer(playerName.trim(), selectedTeam);
       setPlayerName('');
+      setSelectedTeamId('');
       setShowAddForm(false);
       onShowNotification('Player added successfully!', 'success');
     } catch (error) {
@@ -60,6 +65,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   const handleCancelAdd = () => {
     setShowAddForm(false);
     setPlayerName('');
+    setSelectedTeamId('');
   };
 
   const handleRemovePlayer = (id: number, name: string) => {
@@ -71,13 +77,13 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
     }
   };
 
-  const handleEditPlayer = (id: number, name: string) => {
+  const handleEditPlayer = (player: Player) => {
     if (!disabled) {
-      setEditingPlayer({ id, name });
+      setEditingPlayer({ id: player.id, name: player.name, teamId: player.teamId || '' });
     }
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingPlayer || !editingPlayer.name.trim()) {
       onShowNotification('Please enter a player name', 'error');
       return;
@@ -85,7 +91,12 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
 
     try {
       if (onUpdatePlayer) {
-        onUpdatePlayer(editingPlayer.id, { name: editingPlayer.name.trim() });
+        const team = teams.find(item => item.id === editingPlayer.teamId);
+        await onUpdatePlayer(editingPlayer.id, {
+          name: editingPlayer.name.trim(),
+          teamId: team?.id,
+          teamName: team?.name
+        });
         onShowNotification('Player updated successfully!', 'success');
       }
       setEditingPlayer(null);
@@ -131,6 +142,21 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                   autoFocus
                 />
               </div>
+              <div className="form-group">
+                <label htmlFor="playerTeam">Team</label>
+                <select
+                  id="playerTeam"
+                  value={selectedTeamId}
+                  onChange={(e) => setSelectedTeamId(e.target.value)}
+                >
+                  <option value="">No team</option>
+                  {teams.map(team => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="form-actions">
                 <button className="btn btn-success" onClick={handleSavePlayer}>
                   <i className="fas fa-check"></i> Save
@@ -160,6 +186,17 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                       onChange={(e) => setEditingPlayer({...editingPlayer, name: e.target.value})}
                       autoFocus
                     />
+                    <select
+                      value={editingPlayer.teamId}
+                      onChange={(e) => setEditingPlayer({ ...editingPlayer, teamId: e.target.value })}
+                    >
+                      <option value="">No team</option>
+                      {teams.map(team => (
+                        <option key={team.id} value={team.id}>
+                          {team.name}
+                        </option>
+                      ))}
+                    </select>
                     <div className="edit-actions">
                       <button className="btn btn-success btn-sm" onClick={handleSaveEdit}>
                         <i className="fas fa-check"></i>
@@ -173,11 +210,19 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                   <>
                     <div className="player-info">
                       <div className="player-name">{player.name}</div>
+                      {player.teamName && (
+                        <div className="player-team-badge">
+                          <span className="player-team-label">Team</span>
+                          <span className="player-team-name">
+                            <i className="fas fa-people-group"></i> {player.teamName}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="player-actions">
                       <button 
                         className="btn btn-secondary btn-sm" 
-                        onClick={() => handleEditPlayer(player.id, player.name)}
+                        onClick={() => handleEditPlayer(player)}
                       >
                         <i className="fas fa-edit"></i>
                       </button>

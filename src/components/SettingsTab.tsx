@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Player, Session, SessionSettings, AppSettings } from '../types';
+import { Player, Session, SessionSettings, AppSettings, Team } from '../types';
 
 // Components
 import SessionSettingsComponent from './SessionSettings';
+import TeamsManagement from './TeamsManagement';
 import PlayersManagement from './PlayersManagement';
 import SessionsManagement from './SessionsManagement';
 import SettingsModal from './SettingsModal';
@@ -16,9 +17,13 @@ interface SettingsTabProps {
   
   // Players
   players: Player[];
-  onAddPlayer: (name: string) => void;
-  onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
+  teams: Team[];
+  onAddPlayer: (name: string, team?: Team | null) => Promise<void>;
+  onUpdatePlayer?: (id: number, updates: Partial<Player>) => Promise<void>;
   onRemovePlayer: (id: number) => void;
+  onAddTeam: (name: string) => Promise<void>;
+  onUpdateTeam: (id: string, updates: Partial<Team>) => Promise<void>;
+  onRemoveTeam: (id: string) => Promise<void>;
   
   // Sessions
   sessions: Session[];
@@ -43,9 +48,13 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   sessionSettings,
   onUpdateSessionSettings,
   players,
+  teams,
   onAddPlayer,
   onUpdatePlayer,
   onRemovePlayer,
+  onAddTeam,
+  onUpdateTeam,
+  onRemoveTeam,
   sessions,
   sessionCosts,
   onAddSession,
@@ -61,6 +70,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
 }) => {
   const [sectionStates, setSectionStates] = useState({
     sessionSettings: true,
+    teams: true,
     players: true,
     sessions: true
   });
@@ -75,12 +85,13 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
     const newState = !areAllExpanded;
     setSectionStates({
       sessionSettings: newState,
+      teams: newState,
       players: newState,
       sessions: newState
     });
   };
   
-  const handleSectionToggle = (section: 'sessionSettings' | 'players' | 'sessions', state: boolean) => {
+  const handleSectionToggle = (section: 'sessionSettings' | 'teams' | 'players' | 'sessions', state: boolean) => {
     setSectionStates(prev => ({
       ...prev,
       [section]: state
@@ -168,14 +179,37 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
         disabled={isLocked}
       />
 
+      <TeamsManagement
+        teams={teams}
+        onAddTeam={(name) => {
+          if (!isLocked) return onAddTeam(name);
+          return Promise.resolve();
+        }}
+        onUpdateTeam={(id, updates) => {
+          if (!isLocked) return onUpdateTeam(id, updates);
+          return Promise.resolve();
+        }}
+        onRemoveTeam={(id) => {
+          if (!isLocked) return onRemoveTeam(id);
+          return Promise.resolve();
+        }}
+        onShowNotification={onShowNotification}
+        isExpanded={sectionStates.teams}
+        onToggle={(state) => handleSectionToggle('teams', state)}
+        disabled={isLocked}
+      />
+
       {/* Players Management */}
       <PlayersManagement
         players={players}
-        onAddPlayer={(name) => {
-          if (!isLocked) onAddPlayer(name);
+        teams={teams}
+        onAddPlayer={(name, team) => {
+          if (!isLocked) return onAddPlayer(name, team);
+          return Promise.resolve();
         }}
         onUpdatePlayer={onUpdatePlayer ? (id, updates) => {
-          if (!isLocked && onUpdatePlayer) onUpdatePlayer(id, updates);
+          if (!isLocked && onUpdatePlayer) return onUpdatePlayer(id, updates);
+          return Promise.resolve();
         } : undefined}
         onRemovePlayer={(id) => {
           if (!isLocked) onRemovePlayer(id);

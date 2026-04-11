@@ -1,7 +1,14 @@
 export interface Player {
   id: number;
   name: string;
+  teamId?: string;
+  teamName?: string;
   hasPaid?: boolean; // New property to track payment status
+}
+
+export interface Team {
+  id: string;
+  name: string;
 }
 
 export interface Session {
@@ -52,6 +59,11 @@ export interface SessionSettings {
 export interface PlayerDoc {
   id: string;
   data: Player;
+}
+
+export interface TeamDoc {
+  id: string;
+  data: Team;
 }
 
 export interface SessionDoc {

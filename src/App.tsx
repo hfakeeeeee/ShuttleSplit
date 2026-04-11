@@ -16,7 +16,7 @@ import { ThemeProvider } from './components/ThemeProvider';
 import { AuthProvider } from './components/AuthContext';
 
 // Hooks
-import { usePlayers, useSessions, useSettings, useSessionSettings, useNotification } from './hooks';
+import { usePlayers, useSessions, useSettings, useSessionSettings, useNotification, useTeams } from './hooks';
 
 // Utils
 import { calculateSessionCosts, calculatePlayerCosts } from './utils';
@@ -30,6 +30,7 @@ const App: React.FC = () => {
   
   // Custom hooks
   const { players, addPlayer, updatePlayer, removePlayer } = usePlayers();
+  const { teams, addTeam, updateTeam, removeTeam } = useTeams(players, updatePlayer);
   const { sessions, addSession, removeSession, updateSessionParticipants, updateSessionAdditionalFee, updateSessionWaterFee } = useSessions();
   const { settings, updateSettings } = useSettings();
   const { sessionSettings, updateSessionSettings } = useSessionSettings();
@@ -124,9 +125,13 @@ const App: React.FC = () => {
                 sessionSettings={sessionSettings}
                 onUpdateSessionSettings={updateSessionSettings}
                 players={players}
+                teams={teams}
                 onAddPlayer={addPlayer}
                 onUpdatePlayer={updatePlayer}
                 onRemovePlayer={removePlayer}
+                onAddTeam={addTeam}
+                onUpdateTeam={updateTeam}
+                onRemoveTeam={removeTeam}
                 sessions={sessions}
                 sessionCosts={sessionCosts}
                 onAddSession={addSession}
