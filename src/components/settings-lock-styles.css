@@ -94,10 +94,10 @@
   opacity: 0.7;
 }
 
-.disabled-section button:not(.close-btn):not(.expand-btn),
-.disabled-section input,
-.disabled-section select,
-.disabled-section textarea {
+.disabled-section .collapsible-content button:not(.close-btn),
+.disabled-section .collapsible-content input,
+.disabled-section .collapsible-content select,
+.disabled-section .collapsible-content textarea {
   opacity: 0.7;
   pointer-events: none;
   cursor: not-allowed !important;

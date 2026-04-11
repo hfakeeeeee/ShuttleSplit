@@ -479,8 +479,6 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   flex: 1;
-  overflow-y: auto;
-  min-height: 400px;
   padding: 0.5rem 0;
 }
 

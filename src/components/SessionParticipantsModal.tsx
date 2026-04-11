@@ -56,6 +56,21 @@ const SessionParticipantsModal: React.FC<SessionParticipantsModalProps> = ({
     onClose();
   };
 
+  const groupedPlayers = players.reduce((groups, player) => {
+    const teamName = player.teamName || 'No Team';
+    if (!groups[teamName]) {
+      groups[teamName] = [];
+    }
+    groups[teamName].push(player);
+    return groups;
+  }, {} as Record<string, Player[]>);
+
+  const teamNames = Object.keys(groupedPlayers).sort((a, b) => {
+    if (a === 'No Team') return 1;
+    if (b === 'No Team') return -1;
+    return a.localeCompare(b);
+  });
+
   if (!isOpen || !session) return null;
 
   return (
@@ -80,33 +95,40 @@ const SessionParticipantsModal: React.FC<SessionParticipantsModalProps> = ({
             </div>
           </div>
           
-          <div className="participants-list">
-            {players.map(player => (
-              <div
-                key={player.id}
-                className={`participant-item participant-select-item ${selectedParticipants.includes(player.id) ? 'selected' : ''}`}
-                onClick={() => handleToggleParticipant(player.id)}
-              >
-                <div className="participant-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedParticipants.includes(player.id)}
-                    onChange={() => handleToggleParticipant(player.id)}
-                  />
-                </div>
-                <div className="participant-info">
-                  <span className="participant-name">{player.name}</span>
-                </div>
-                <div className="participant-status">
-                  {selectedParticipants.includes(player.id) ? (
-                    <i className="fas fa-check-circle" style={{ color: 'var(--accent-color)' }}></i>
-                  ) : (
-                    <i className="far fa-circle" style={{ color: 'var(--text-light)' }}></i>
-                  )}
-                </div>
+          {teamNames.map(teamName => (
+            <div key={teamName} className="participant-team-group">
+              <div className="participant-team-heading">
+                <i className="fas fa-flag"></i> {teamName}
               </div>
-            ))}
-          </div>
+              <div className="participants-list">
+                {groupedPlayers[teamName].map(player => (
+                  <div
+                    key={player.id}
+                    className={`participant-item participant-select-item ${selectedParticipants.includes(player.id) ? 'selected' : ''}`}
+                    onClick={() => handleToggleParticipant(player.id)}
+                  >
+                    <div className="participant-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={selectedParticipants.includes(player.id)}
+                        onChange={() => handleToggleParticipant(player.id)}
+                      />
+                    </div>
+                    <div className="participant-info">
+                      <span className="participant-name">{player.name}</span>
+                    </div>
+                    <div className="participant-status">
+                      {selectedParticipants.includes(player.id) ? (
+                        <i className="fas fa-check-circle" style={{ color: 'var(--accent-color)' }}></i>
+                      ) : (
+                        <i className="far fa-circle" style={{ color: 'var(--text-light)' }}></i>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
         <div className="modal-footer">
           <button className="btn btn-primary" onClick={handleSave}>

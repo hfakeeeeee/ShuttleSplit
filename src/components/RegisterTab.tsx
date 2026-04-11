@@ -41,6 +41,23 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
   
   // Memoize players data to prevent unnecessary re-renders
   const memoizedPlayers = React.useMemo(() => players, [players]);
+  const groupedPlayers = React.useMemo(() => {
+    return memoizedPlayers.reduce((groups, player) => {
+      const teamName = player.teamName || 'No Team';
+      if (!groups[teamName]) {
+        groups[teamName] = [];
+      }
+      groups[teamName].push(player);
+      return groups;
+    }, {} as Record<string, Player[]>);
+  }, [memoizedPlayers]);
+  const groupedTeamNames = React.useMemo(() => {
+    return Object.keys(groupedPlayers).sort((a, b) => {
+      if (a === 'No Team') return 1;
+      if (b === 'No Team') return -1;
+      return a.localeCompare(b);
+    });
+  }, [groupedPlayers]);
   
   // Load planned sessions from Firestore
   useEffect(() => {
@@ -447,46 +464,54 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                       <p>No players added yet. Add players in Settings to register them for sessions.</p>
                     </div>
                   ) : (
-                    <div className="participants-grid">
-                      {memoizedPlayers.map(player => (
-                        <div 
-                          key={player.id} 
-                          className={`participant-card ${
-                            selectedSession.participants.includes(player.id) && 
-                            selectedSession.participants.findIndex(id => id === player.id) >= MAX_REGULAR_PLAYERS 
-                              ? 'walk-in-guest' 
-                              : ''
-                          }`}
-                        >
-                          {/* The walk-in label is handled by ::after in CSS */}
-                          <label className="checkbox-container modern-checkbox">
-                            <input
-                              type="checkbox"
-                              checked={selectedSession.participants.includes(player.id)}
-                              onChange={(e) => {
-                                const isChecked = e.target.checked;
-                                let updatedParticipants;
-                                
-                                if (isChecked) {
-                                  updatedParticipants = [...selectedSession.participants, player.id];
-                                } else {
-                                  updatedParticipants = selectedSession.participants.filter(id => id !== player.id);
-                                }
+                    <>
+                      {groupedTeamNames.map(teamName => (
+                        <div key={teamName} className="participant-team-group">
+                          <div className="participant-team-heading">
+                            <i className="fas fa-flag"></i> {teamName}
+                          </div>
+                          <div className="participants-grid">
+                            {groupedPlayers[teamName].map(player => (
+                              <div 
+                                key={player.id} 
+                                className={`participant-card ${
+                                  selectedSession.participants.includes(player.id) && 
+                                  selectedSession.participants.findIndex(id => id === player.id) >= MAX_REGULAR_PLAYERS 
+                                    ? 'walk-in-guest' 
+                                    : ''
+                                }`}
+                              >
+                                <label className="checkbox-container modern-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedSession.participants.includes(player.id)}
+                                    onChange={(e) => {
+                                      const isChecked = e.target.checked;
+                                      let updatedParticipants;
+                                      
+                                      if (isChecked) {
+                                        updatedParticipants = [...selectedSession.participants, player.id];
+                                      } else {
+                                        updatedParticipants = selectedSession.participants.filter(id => id !== player.id);
+                                      }
 
-                                setSelectedSession({
-                                  ...selectedSession,
-                                  participants: updatedParticipants
-                                });
-                              }}
-                            />
-                            <span className="checkmark"></span>
-                            <span className="player-name">
-                              <i className="fas fa-user"></i> {player.name}
-                            </span>
-                          </label>
+                                      setSelectedSession({
+                                        ...selectedSession,
+                                        participants: updatedParticipants
+                                      });
+                                    }}
+                                  />
+                                  <span className="checkmark"></span>
+                                  <span className="player-name">
+                                    <i className="fas fa-user"></i> {player.name}
+                                  </span>
+                                </label>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ))}
-                    </div>
+                    </>
                   )}
                 </div>
                 <div className="modal-footer">

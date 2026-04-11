@@ -1368,6 +1368,24 @@ input:focus, select:focus {
   padding: 0.5rem;
 }
 
+.participant-team-group {
+  margin-bottom: 1rem;
+}
+
+.participant-team-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .participant-item {
   display: flex;
   align-items: center;
