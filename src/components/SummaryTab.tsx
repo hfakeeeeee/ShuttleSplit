@@ -299,7 +299,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
           <span className="view-switch-track">
             <span className="view-switch-thumb"></span>
           </span>
-          <span className="view-switch-label">Group by team</span>
+          <span className="view-switch-label">Display by team</span>
         </label>
       </div>
 
