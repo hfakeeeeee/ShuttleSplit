@@ -135,7 +135,7 @@ const Summary: React.FC<SummaryProps> = ({
         <div className="qr-section">
           <h3><i className="fas fa-qrcode"></i> Payment Options</h3>
           <div className="payment-methods">
-            {/* Bank Transfer */}
+            {/* Bank Transfer
             <div className="payment-method">
               <div className="payment-qr-large">
                 <img 
@@ -147,7 +147,7 @@ const Summary: React.FC<SummaryProps> = ({
                   }}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* MoMo */}
             <div className="payment-method">

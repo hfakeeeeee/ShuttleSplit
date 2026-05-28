@@ -1494,7 +1494,6 @@ input:focus, select:focus {
 
 /* MoMo Payment Section */
 .payment-methods {
-  display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-top: 1rem;
@@ -1885,8 +1884,8 @@ input:focus, select:focus {
 }
 
 .payment-qr-image {
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 900px;
   object-fit: contain;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -1902,7 +1901,6 @@ input:focus, select:focus {
 }
 
 .payment-methods {
-  display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-top: 1rem;
