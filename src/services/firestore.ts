@@ -1,6 +1,7 @@
 import { db } from '../firebase';
-import { collection, deleteDoc, doc, onSnapshot, query, orderBy, setDoc } from 'firebase/firestore';
-import { Player, Session, AppSettings, SessionSettings, SystemLog, Team } from '../types';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, query, orderBy, setDoc, writeBatch, DocumentReference } from 'firebase/firestore';
+import { Player, Session, AppSettings, SessionSettings, SystemLog, Team, BillingMonth } from '../types';
+import { getMonthId } from '../utils';
 
 const playersCol = collection(db, 'players');
 const teamsCol = collection(db, 'teams');
@@ -8,6 +9,8 @@ const sessionsCol = collection(db, 'sessions');
 const settingsDocRef = doc(db, 'meta', 'settings');
 const sessionSettingsDocRef = doc(db, 'meta', 'sessionSettings');
 const systemLogsCol = collection(db, 'systemLogs');
+const billingMonthsCol = collection(db, 'billingMonths');
+const plannedSessionsCol = collection(db, 'plannedSessions');
 
 const stripUndefined = <T extends Record<string, unknown>>(data: T): Partial<T> => {
   return Object.fromEntries(
@@ -71,6 +74,43 @@ export const setSessionDb = async (session: Session) => {
 
 export const deleteSessionDb = async (sessionId: number) => {
   await deleteDoc(doc(sessionsCol, String(sessionId)));
+};
+
+export const subscribeBillingMonths = (cb: (months: BillingMonth[]) => void) => {
+  const q = query(billingMonthsCol, orderBy('id', 'asc'));
+  return onSnapshot(q, snapshot => {
+    cb(snapshot.docs.map(d => d.data() as BillingMonth));
+  });
+};
+
+export const saveBillingMonthDb = async (month: BillingMonth) => {
+  await setDoc(doc(billingMonthsCol, month.id), month);
+};
+
+export const deleteBillingMonthDataDb = async (monthId: string) => {
+  const [sessionsSnapshot, plannedSessionsSnapshot] = await Promise.all([
+    getDocs(sessionsCol),
+    getDocs(plannedSessionsCol)
+  ]);
+
+  const targets: DocumentReference[] = [doc(billingMonthsCol, monthId)];
+
+  sessionsSnapshot.docs.forEach(sessionDoc => {
+    const data = sessionDoc.data() as Session;
+    if ((data.monthId || getMonthId(data.date)) === monthId) targets.push(sessionDoc.ref);
+  });
+
+  plannedSessionsSnapshot.docs.forEach(sessionDoc => {
+    const data = sessionDoc.data() as Session;
+    if (getMonthId(data.date) === monthId) targets.push(sessionDoc.ref);
+  });
+
+  // Keep batches below Firestore's 500-operation limit.
+  for (let index = 0; index < targets.length; index += 450) {
+    const batch = writeBatch(db);
+    targets.slice(index, index + 450).forEach(target => batch.delete(target));
+    await batch.commit();
+  }
 };
 
 export const subscribeSettings = (cb: (settings: AppSettings) => void, fallback: AppSettings) => {

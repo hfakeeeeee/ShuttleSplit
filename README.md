@@ -54,6 +54,11 @@ service cloud.firestore {
     match /plannedSessions/{sessionId} {
       allow read, write: if true;  // Adjust based on your auth requirements
     }
+
+    // Monthly fee settings and payment status
+    match /billingMonths/{monthId} {
+      allow read, write: if true;  // Adjust based on your auth requirements
+    }
     
     // Allow read/write to meta/settings document
     match /meta/settings {
@@ -180,6 +185,16 @@ The application uses the following Firestore structure:
   - `createdAt` (timestamp): Creation timestamp
   - `additionalFee` (number, optional): Extra fee for this session
   - `waterFee` (number, optional): Water fee for this session
+
+### Collection: `billingMonths`
+- **Document ID**: Month in `YYYY-MM` format (for example, `2026-09`)
+- **Fields**:
+  - `id` (string): Month ID
+  - `settings` (map): Independent court and shuttlecock settings for the month
+  - `payments` (map): Paid/unpaid state keyed by player ID
+  - `createdAt` (number): Creation time in milliseconds
+
+Sessions can include a `monthId` field and an `extraCharges` array. Each extra charge stores a description, a total amount, and the selected participant IDs who split that amount.
 
 ### Document: `meta/settings`
 - **Fields**:

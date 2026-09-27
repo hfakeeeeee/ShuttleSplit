@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Session, SessionCosts, Player } from '../types';
+import React, { useEffect, useState } from 'react';
+import { Session, SessionCosts, Player, SessionExtraCharge } from '../types';
 import { formatCurrency } from '../utils';
 import SessionParticipantsModal from './SessionParticipantsModal';
 import CollapsibleSection from './CollapsibleSection';
+import SessionExtraChargeModal from './SessionExtraChargeModal';
 
 interface SessionsManagementProps {
   sessions: Session[];
@@ -13,10 +14,12 @@ interface SessionsManagementProps {
   onUpdateSessionParticipants: (sessionId: number, participants: number[]) => void;
   onUpdateSessionAdditionalFee: (sessionId: number, additionalFee: number) => void;
   onUpdateSessionWaterFee: (sessionId: number, waterFee: number) => void;
+  onUpdateSessionExtraCharges: (sessionId: number, charges: SessionExtraCharge[]) => void;
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   isExpanded?: boolean;
   onToggle?: (isExpanded: boolean) => void;
   disabled?: boolean;
+  activeMonthId: string;
 }
 
 const SessionsManagement: React.FC<SessionsManagementProps> = ({
@@ -28,10 +31,12 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
   onUpdateSessionParticipants,
   onUpdateSessionAdditionalFee,
   onUpdateSessionWaterFee,
+  onUpdateSessionExtraCharges,
   onShowNotification,
   isExpanded,
   onToggle,
-  disabled = false
+  disabled = false,
+  activeMonthId
 }) => {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [showParticipantsModal, setShowParticipantsModal] = useState(false);
@@ -39,6 +44,12 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
   const [showParticipantDetails, setShowParticipantDetails] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [localExpanded, setLocalExpanded] = useState(true);
+  const [chargeSession, setChargeSession] = useState<Session | null>(null);
+  const [editingCharge, setEditingCharge] = useState<SessionExtraCharge | null>(null);
+
+  useEffect(() => {
+    setSelectedDate('');
+  }, [activeMonthId]);
   
   const handleToggle = (newState: boolean) => {
     setLocalExpanded(newState);
@@ -80,6 +91,21 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
     onUpdateSessionWaterFee(sessionId, numValue);
   };
 
+  const handleSaveExtraCharge = (charge: SessionExtraCharge) => {
+    if (!chargeSession) return;
+    const existing = chargeSession.extraCharges || [];
+    const next = [...existing.filter(item => item.id !== charge.id), charge];
+    onUpdateSessionExtraCharges(chargeSession.id, next);
+    setChargeSession(null);
+    setEditingCharge(null);
+    onShowNotification('Group charge saved!', 'success');
+  };
+
+  const handleRemoveExtraCharge = (session: Session, chargeId: string) => {
+    onUpdateSessionExtraCharges(session.id, (session.extraCharges || []).filter(charge => charge.id !== chargeId));
+    onShowNotification('Group charge removed', 'info');
+  };
+
   const getParticipantNames = (participantIds: number[]) => {
     const filteredPlayers = players.filter(player => participantIds.includes(player.id));
     
@@ -92,13 +118,6 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
     return 'No participants';
   };
   
-  const getFullParticipantList = (participantIds: number[]) => {
-    return players
-      .filter(player => participantIds.includes(player.id))
-      .map(player => player.name)
-      .join(', ');
-  };
-
   return (
     <>
       <CollapsibleSection
@@ -117,11 +136,13 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
               onChange={(e) => setSelectedDate(e.target.value)}
               className="date-input"
               disabled={disabled}
+              min={`${activeMonthId}-01`}
+              max={`${activeMonthId}-${new Date(Number(activeMonthId.slice(0, 4)), Number(activeMonthId.slice(5, 7)), 0).getDate()}`}
             />
             <button 
               className="btn btn-primary" 
               onClick={handleAddSession} 
-              disabled={disabled}
+              disabled={disabled || !selectedDate}
             >
               <i className="fas fa-plus"></i> Add Day
             </button>
@@ -160,12 +181,14 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
                       <button 
                         className="btn btn-secondary btn-sm" 
                         onClick={() => handleEditParticipants(session)}
+                        disabled={disabled}
                       >
                         <i className="fas fa-users"></i> Participants
                       </button>
                       <button 
                         className="btn btn-danger btn-sm" 
                         onClick={() => handleRemoveSession(session.id, session.name)}
+                        disabled={disabled}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
@@ -190,6 +213,7 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
                           value={session.waterFee || ''}
                           onChange={(e) => handleWaterFeeChange(session.id, e.target.value)}
                           className="additional-fee-input"
+                          disabled={disabled}
                         />
                         <span className="currency-suffix">₫</span>
                       </div>
@@ -204,6 +228,7 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
                           value={session.additionalFee || ''}
                           onChange={(e) => handleAdditionalFeeChange(session.id, e.target.value)}
                           className="additional-fee-input"
+                          disabled={disabled}
                         />
                         <span className="currency-suffix">₫</span>
                       </div>
@@ -213,9 +238,36 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
                         Total per Day
                       </div>
                       <div className="cost-value">
-                        {formatCurrency(sessionCosts.totalPerSession + (session.additionalFee || 0) + (session.waterFee || 0))}
+                        {formatCurrency(sessionCosts.totalPerSession + (session.additionalFee || 0) + (session.waterFee || 0) + (session.extraCharges || []).reduce((sum, charge) => sum + charge.amount, 0))}
                       </div>
                     </div>
+                  </div>
+                  <div className="group-charges">
+                    <div className="group-charges-header">
+                      <div>
+                        <strong><i className="fas fa-user-group"></i> Group Charges</strong>
+                        <span> Split only between selected players</span>
+                      </div>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        disabled={disabled || session.participants.length === 0}
+                        onClick={() => { setChargeSession(session); setEditingCharge(null); }}
+                      >
+                        <i className="fas fa-plus"></i> Add Group Charge
+                      </button>
+                    </div>
+                    {(session.extraCharges || []).map(charge => (
+                      <div key={charge.id} className="group-charge-row">
+                        <button className="group-charge-main" disabled={disabled} onClick={() => { setChargeSession(session); setEditingCharge(charge); }}>
+                          <span>{charge.name}</span>
+                          <small>{charge.participants.length} players · {formatCurrency(charge.amount / Math.max(charge.participants.length, 1))} each</small>
+                        </button>
+                        <strong>{formatCurrency(charge.amount)}</strong>
+                        <button className="btn btn-danger btn-sm" disabled={disabled} onClick={() => handleRemoveExtraCharge(session, charge.id)} aria-label={`Remove ${charge.name}`}>
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))
@@ -230,6 +282,14 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({
         players={players}
         onClose={() => setShowParticipantsModal(false)}
         onSave={handleSaveParticipants}
+      />
+
+      <SessionExtraChargeModal
+        session={chargeSession}
+        players={players}
+        charge={editingCharge}
+        onClose={() => { setChargeSession(null); setEditingCharge(null); }}
+        onSave={handleSaveExtraCharge}
       />
 
       {/* Participant Details Modal */}

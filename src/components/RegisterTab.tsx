@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Session, Player } from '../types';
 import CollapsibleSection from './CollapsibleSection';
 import { db } from '../firebase';
-import { collection, addDoc, deleteDoc, doc, updateDoc, getDocs, query, where, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 
 // Constants
@@ -17,6 +17,8 @@ interface PlannedSession extends Omit<Session, 'id'> {
 interface RegisterTabProps {
   // Players
   players: Player[];
+  activeMonthId: string;
+  dataVersion?: number;
   
   // Notifications
   onShowNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -24,6 +26,8 @@ interface RegisterTabProps {
 
 const RegisterTab: React.FC<RegisterTabProps> = ({
   players,
+  activeMonthId,
+  dataVersion = 0,
   onShowNotification
 }) => {
   const [selectedDate, setSelectedDate] = useState('');
@@ -36,8 +40,10 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
   
   // Use shared auth context instead of local state
   const { isLocked } = useAuth();
-  const [currentAction, setCurrentAction] = useState<'add' | 'delete' | null>(null);
-  const [sessionToDelete, setSessionToDelete] = useState<{id: string, name: string} | null>(null);
+
+  useEffect(() => {
+    setSelectedDate('');
+  }, [activeMonthId]);
   
   // Memoize players data to prevent unnecessary re-renders
   const memoizedPlayers = React.useMemo(() => players, [players]);
@@ -58,6 +64,10 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
       return a.localeCompare(b);
     });
   }, [groupedPlayers]);
+  const visiblePlannedSessions = React.useMemo(
+    () => plannedSessions.filter(session => session.date?.startsWith(activeMonthId)),
+    [plannedSessions, activeMonthId]
+  );
   
   // Load planned sessions from Firestore
   useEffect(() => {
@@ -88,11 +98,15 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
     
     loadPlannedSessions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Remove dependency to prevent double-loading
+  }, [dataVersion]);
 
   const handleAttemptAddPlannedSession = () => {
     if (!selectedDate) {
       onShowNotification('Please select a date', 'error');
+      return;
+    }
+    if (!selectedDate.startsWith(activeMonthId)) {
+      onShowNotification('Please select a date inside the active billing month', 'error');
       return;
     }
     
@@ -101,7 +115,6 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
       return;
     }
     
-    setCurrentAction('add');
     handleAddPlannedSession();
   };
   
@@ -113,8 +126,7 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
     
     try {
       setIsSubmitting(true);
-      const date = new Date(selectedDate);
-      const sessionName = `Planned Day ${plannedSessions.length + 1}`;
+      const sessionName = `Planned Day ${visiblePlannedSessions.length + 1}`;
       
       const newSession: PlannedSession = {
         name: sessionName,
@@ -153,8 +165,6 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
         return;
       }
       
-      setSessionToDelete({ id, name });
-      setCurrentAction('delete');
       handleRemoveSession(id, name);
     }
   };
@@ -257,17 +267,10 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
     });
   };
   
-  // Get next month's name for the heading
-  const getNextMonthName = () => {
-    const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-    return nextMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
-  };
-
   return (
     <div className="tab-content fade-in">
       <CollapsibleSection
-        title={`Plan for next month`}
+        title={`Plan for ${new Date(Number(activeMonthId.slice(0, 4)), Number(activeMonthId.slice(5, 7)) - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}
         icon="fas fa-calendar-alt"
         className="planned-sessions-section"
         defaultExpanded={true}
@@ -292,7 +295,8 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                   className="modern-input"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]} // Only future dates
+                  min={`${activeMonthId}-01`}
+                  max={`${activeMonthId}-${new Date(Number(activeMonthId.slice(0, 4)), Number(activeMonthId.slice(5, 7)), 0).getDate()}`}
                 />
               </div>
               <button
@@ -317,7 +321,7 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
             <div className="add-session-heading">
               <h3 className="card-title"><i className="fas fa-list"></i> Planned Days</h3>
               <div className="status-badge status-badge-success">
-                <i className="fas fa-calendar-check"></i> {plannedSessions.length} Days
+                <i className="fas fa-calendar-check"></i> {visiblePlannedSessions.length} Days
               </div>
             </div>
             
@@ -326,14 +330,14 @@ const RegisterTab: React.FC<RegisterTabProps> = ({
                 <i className="fas fa-spinner fa-spin fa-2x"></i>
                 <p>Loading planned days...</p>
               </div>
-            ) : plannedSessions.length === 0 ? (
+            ) : visiblePlannedSessions.length === 0 ? (
               <div className="empty-state">
                 <i className="fas fa-calendar"></i>
                 <p>No days planned yet. Add a day to get started.</p>
               </div>
             ) : (
               <div className="sessions-grid">
-                {plannedSessions.map((session) => (
+                {visiblePlannedSessions.map((session) => (
                   <div key={session.id} className="session-card slide-in">
                     <div className="session-indicator"></div>
                     <div className="session-header">

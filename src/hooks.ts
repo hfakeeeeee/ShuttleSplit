@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Player, Session, AppSettings, SessionSettings, Team } from './types';
-import { subscribePlayers, addPlayerDb, removePlayerDb, subscribeSessions, setSessionDb, deleteSessionDb, subscribeSettings, saveSettingsDb, subscribeSessionSettings, saveSessionSettingsDb, subscribeTeams, saveTeamDb, deleteTeamDb } from './services/firestore';
+import { Player, Session, AppSettings, SessionSettings, Team, BillingMonth, SessionExtraCharge } from './types';
+import { subscribePlayers, addPlayerDb, removePlayerDb, subscribeSessions, setSessionDb, deleteSessionDb, subscribeSettings, saveSettingsDb, subscribeSessionSettings, saveSessionSettingsDb, subscribeTeams, saveTeamDb, deleteTeamDb, subscribeBillingMonths, saveBillingMonthDb, deleteBillingMonthDataDb } from './services/firestore';
 
 export const usePlayers = () => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -107,11 +107,11 @@ export const useSessions = () => {
     return () => unsub();
   }, []);
 
-  const addSession = async (selectedDate?: string) => {
+  const addSession = async (selectedDate?: string, monthId?: string) => {
     const sessionDate = selectedDate || new Date().toLocaleDateString();
     const dateObj = new Date(sessionDate);
     const formattedName = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const newSession: Session = { id: Date.now(), name: formattedName, date: sessionDate, participants: [] };
+    const newSession: Session = { id: Date.now(), name: formattedName, date: sessionDate, monthId, participants: [], extraCharges: [] };
     setSessions(prev => [...prev, newSession]);
     await setSessionDb(newSession);
   };
@@ -122,7 +122,13 @@ export const useSessions = () => {
   };
 
   const updateSessionParticipants = async (sessionId: number, participants: number[]) => {
-    const updated = sessions.map(s => s.id === sessionId ? { ...s, participants } : s);
+    const updated = sessions.map(s => s.id === sessionId ? {
+      ...s,
+      participants,
+      extraCharges: (s.extraCharges || [])
+        .map(charge => ({ ...charge, participants: charge.participants.filter(id => participants.includes(id)) }))
+        .filter(charge => charge.participants.length > 0)
+    } : s);
     setSessions(updated);
     const session = updated.find(s => s.id === sessionId)!;
     await setSessionDb(session);
@@ -142,7 +148,33 @@ export const useSessions = () => {
     await setSessionDb(session);
   };
 
-  return { sessions, addSession, removeSession, updateSessionParticipants, updateSessionAdditionalFee, updateSessionWaterFee };
+  const updateSessionExtraCharges = async (sessionId: number, extraCharges: SessionExtraCharge[]) => {
+    const updated = sessions.map(s => s.id === sessionId ? { ...s, extraCharges } : s);
+    setSessions(updated);
+    const session = updated.find(s => s.id === sessionId)!;
+    await setSessionDb(session);
+  };
+
+  return { sessions, addSession, removeSession, updateSessionParticipants, updateSessionAdditionalFee, updateSessionWaterFee, updateSessionExtraCharges };
+};
+
+export const useBillingMonths = () => {
+  const [months, setMonths] = useState<BillingMonth[]>([]);
+
+  useEffect(() => {
+    const unsub = subscribeBillingMonths(setMonths);
+    return () => unsub();
+  }, []);
+
+  const saveMonth = async (month: BillingMonth) => {
+    await saveBillingMonthDb(month);
+  };
+
+  const deleteMonth = async (monthId: string) => {
+    await deleteBillingMonthDataDb(monthId);
+  };
+
+  return { months, saveMonth, deleteMonth };
 };
 
 export const useSettings = () => {

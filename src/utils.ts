@@ -54,9 +54,12 @@ export const calculatePlayerCosts = (
           const sessionWaterFee = session.waterFee || 0;
           const totalSessionCost = sessionCosts.totalPerSession + sessionAdditionalFee + sessionWaterFee;
           const baseAmountPerPlayer = totalSessionCost / participatingCount;
-          
-          // All players pay the same amount per session
-          const costPerSession = baseAmountPerPlayer;
+          const individualExtra = (session.extraCharges || []).reduce((sum, charge) => {
+            if (!charge.participants.includes(player.id) || charge.participants.length === 0) return sum;
+            return sum + charge.amount / charge.participants.length;
+          }, 0);
+
+          const costPerSession = baseAmountPerPlayer + individualExtra;
           
           const roundedCost = Math.round(costPerSession);
           totalCost += roundedCost;
@@ -91,6 +94,24 @@ export const calculatePlayerCosts = (
   });
 
   return playerCosts;
+};
+
+export const getMonthId = (date?: string): string => {
+  if (date) {
+    const isoMatch = date.match(/^(\d{4})-(\d{2})/);
+    if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}`;
+    const parsed = new Date(date);
+    if (!Number.isNaN(parsed.getTime())) {
+      return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, '0')}`;
+    }
+  }
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
+export const formatMonthLabel = (monthId: string): string => {
+  const [year, month] = monthId.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 };
 
 export const saveToLocalStorage = (key: string, data: any): void => {

@@ -15,9 +15,18 @@ export interface Session {
   id: number;
   name: string;
   date?: string;
+  monthId?: string;
   participants: number[]; // Array of player IDs who joined this day
   additionalFee?: number; // Additional fee for this specific day
   waterFee?: number; // Water fee for this specific day
+  extraCharges?: SessionExtraCharge[];
+}
+
+export interface SessionExtraCharge {
+  id: string;
+  name: string;
+  amount: number; // Total amount split equally between selected participants
+  participants: number[];
 }
 
 export interface SessionCosts {
@@ -53,6 +62,13 @@ export interface SessionSettings {
   courtFee: number;
   shuttlecockPrice: number;
   shuttlecockCount: number;
+}
+
+export interface BillingMonth {
+  id: string; // YYYY-MM
+  settings: SessionSettings;
+  payments: Record<string, boolean>;
+  createdAt: number;
 }
 
 // Firestore document wrappers

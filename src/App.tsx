@@ -12,14 +12,16 @@ import SummaryTab from './components/SummaryTab';
 import RegisterTab from './components/RegisterTab';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
+import MonthSelector from './components/MonthSelector';
 import { ThemeProvider } from './components/ThemeProvider';
 import { AuthProvider } from './components/AuthContext';
 
 // Hooks
-import { usePlayers, useSessions, useSettings, useSessionSettings, useNotification, useTeams } from './hooks';
+import { usePlayers, useSessions, useSettings, useSessionSettings, useNotification, useTeams, useBillingMonths } from './hooks';
 
 // Utils
-import { calculateSessionCosts, calculatePlayerCosts } from './utils';
+import { calculateSessionCosts, calculatePlayerCosts, getMonthId } from './utils';
+import { BillingMonth, Player, SessionSettings } from './types';
 
 // Lazy load system diagnostics
 const SystemDiagnostics = lazy(() => import('./components/CodeVaultTab'));
@@ -27,20 +29,92 @@ const SystemDiagnostics = lazy(() => import('./components/CodeVaultTab'));
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('summary');
   const [showAppSettings, setShowAppSettings] = useState(false);
+  const [activeMonthId, setActiveMonthId] = useState(() => getMonthId());
+  const [monthDataVersion, setMonthDataVersion] = useState(0);
   
   // Custom hooks
   const { players, addPlayer, updatePlayer, removePlayer } = usePlayers();
   const { teams, addTeam, updateTeam, removeTeam } = useTeams(players, updatePlayer);
-  const { sessions, addSession, removeSession, updateSessionParticipants, updateSessionAdditionalFee, updateSessionWaterFee } = useSessions();
+  const { sessions, addSession, removeSession, updateSessionParticipants, updateSessionAdditionalFee, updateSessionWaterFee, updateSessionExtraCharges } = useSessions();
   const { settings, updateSettings } = useSettings();
-  const { sessionSettings, updateSessionSettings } = useSessionSettings();
+  const { sessionSettings: legacySessionSettings } = useSessionSettings();
+  const { months, saveMonth, deleteMonth } = useBillingMonths();
   const { notification, showNotification } = useNotification();
   
   // No longer need local state for planned sessions - using Firestore
 
-  // Calculations
-  const sessionCosts = useMemo(() => calculateSessionCosts(sessionSettings, sessions.length), [sessionSettings, sessions.length]);
-  const playerCosts = useMemo(() => calculatePlayerCosts(players, sessions, sessionCosts), [players, sessions, sessionCosts]);
+  const activeMonth = months.find(month => month.id === activeMonthId);
+  const activeSessionSettings = activeMonth?.settings || legacySessionSettings;
+  const monthSessions = useMemo(
+    () => sessions.filter(session => (session.monthId || getMonthId(session.date)) === activeMonthId),
+    [sessions, activeMonthId]
+  );
+  const legacyMonthId = useMemo(() => {
+    const ids = sessions.map(session => session.monthId || getMonthId(session.date)).sort();
+    return ids[ids.length - 1] || getMonthId();
+  }, [sessions]);
+  const monthlyPlayers = useMemo(() => players.map(player => ({
+    ...player,
+    hasPaid: activeMonth
+      ? Boolean(activeMonth.payments[String(player.id)])
+      : activeMonthId === legacyMonthId ? Boolean(player.hasPaid) : false
+  })), [players, activeMonth, activeMonthId, legacyMonthId]);
+  const availableMonthIds = useMemo(() => Array.from(new Set([
+    getMonthId(),
+    activeMonthId,
+    ...months.map(month => month.id),
+    ...sessions.map(session => session.monthId || getMonthId(session.date))
+  ])).sort((a, b) => b.localeCompare(a)), [activeMonthId, months, sessions]);
+
+  const sessionCosts = useMemo(() => calculateSessionCosts(activeSessionSettings, monthSessions.length), [activeSessionSettings, monthSessions.length]);
+  const playerCosts = useMemo(() => calculatePlayerCosts(monthlyPlayers, monthSessions, sessionCosts), [monthlyPlayers, monthSessions, sessionCosts]);
+
+  const legacyPayments = () => Object.fromEntries(players.filter(player => player.hasPaid).map(player => [String(player.id), true]));
+  const buildMonth = (id: string, settingsForMonth: SessionSettings, payments: Record<string, boolean> = {}): BillingMonth => ({
+    id,
+    settings: settingsForMonth,
+    payments,
+    createdAt: Date.now()
+  });
+
+  const handleCreateMonth = async (monthId: string) => {
+    const startingPayments = monthId === legacyMonthId && !months.some(month => month.id === monthId)
+      ? legacyPayments()
+      : {};
+    await saveMonth(buildMonth(monthId, { ...activeSessionSettings }, startingPayments));
+    setActiveMonthId(monthId);
+    showNotification('New month created with the previous fee settings', 'success');
+  };
+
+  const handleDeleteMonth = async (monthId: string) => {
+    await deleteMonth(monthId);
+    const fallbackMonthId = availableMonthIds.find(id => id !== monthId) || getMonthId();
+    setActiveMonthId(fallbackMonthId);
+    setMonthDataVersion(version => version + 1);
+    showNotification('Month and all related data deleted', 'success');
+  };
+
+  const handleUpdateMonthSettings = async (updates: Partial<SessionSettings>) => {
+    const baseMonth = activeMonth || buildMonth(
+      activeMonthId,
+      activeSessionSettings,
+      activeMonthId === legacyMonthId ? legacyPayments() : {}
+    );
+    await saveMonth({ ...baseMonth, settings: { ...baseMonth.settings, ...updates } });
+  };
+
+  const handleUpdateMonthlyPlayer = async (id: number, updates: Partial<Player>) => {
+    if (updates.hasPaid === undefined) return;
+    const baseMonth = activeMonth || buildMonth(
+      activeMonthId,
+      activeSessionSettings,
+      activeMonthId === legacyMonthId ? legacyPayments() : {}
+    );
+    await saveMonth({
+      ...baseMonth,
+      payments: { ...baseMonth.payments, [String(id)]: updates.hasPaid }
+    });
+  };
   
   // No longer saving to localStorage - using Firestore instead
 
@@ -101,29 +175,41 @@ const App: React.FC = () => {
           {/* Tabs Navigation */}
           <Tabs activeTab={activeTab} onTabChange={handleTabChange} hasRegisterTab={true} />
 
+          <MonthSelector
+            activeMonthId={activeMonthId}
+            monthIds={availableMonthIds}
+            initializedMonthIds={months.map(month => month.id)}
+            onSelect={setActiveMonthId}
+            onCreate={handleCreateMonth}
+            onDelete={handleDeleteMonth}
+            canDelete={Boolean(activeMonth) || monthSessions.length > 0}
+          />
+
           <main className="main-content">
             {activeTab === 'summary' && (
               <SummaryTab
                 playerCosts={playerCosts}
-                sessionsCount={sessions.length}
-                sessions={sessions}
-                players={players}
+                sessionsCount={monthSessions.length}
+                sessions={monthSessions}
+                players={monthlyPlayers}
                 settings={settings}
-                onUpdatePlayer={updatePlayer}
+                onUpdatePlayer={handleUpdateMonthlyPlayer}
               />
             )}
             
             {activeTab === 'register' && (
               <RegisterTab
                 players={players}
+                activeMonthId={activeMonthId}
+                dataVersion={monthDataVersion}
                 onShowNotification={showNotification}
               />
             )}
 
             {activeTab === 'settings' && (
               <SettingsTab
-                sessionSettings={sessionSettings}
-                onUpdateSessionSettings={updateSessionSettings}
+                sessionSettings={activeSessionSettings}
+                onUpdateSessionSettings={handleUpdateMonthSettings}
                 players={players}
                 teams={teams}
                 onAddPlayer={addPlayer}
@@ -132,13 +218,15 @@ const App: React.FC = () => {
                 onAddTeam={addTeam}
                 onUpdateTeam={updateTeam}
                 onRemoveTeam={removeTeam}
-                sessions={sessions}
+                sessions={monthSessions}
                 sessionCosts={sessionCosts}
-                onAddSession={addSession}
+                onAddSession={(selectedDate) => addSession(selectedDate, activeMonthId)}
                 onRemoveSession={removeSession}
                 onUpdateSessionParticipants={updateSessionParticipants}
                 onUpdateSessionAdditionalFee={updateSessionAdditionalFee}
                 onUpdateSessionWaterFee={updateSessionWaterFee}
+                onUpdateSessionExtraCharges={updateSessionExtraCharges}
+                activeMonthId={activeMonthId}
                 appSettings={settings}
                 onUpdateAppSettings={handleUpdateAppSettings}
                 showAppSettings={showAppSettings}

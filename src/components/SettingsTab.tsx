@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Player, Session, SessionSettings, AppSettings, Team } from '../types';
+import { Player, Session, SessionSettings, AppSettings, Team, SessionExtraCharge } from '../types';
 
 // Components
 import SessionSettingsComponent from './SessionSettings';
@@ -33,6 +33,8 @@ interface SettingsTabProps {
   onUpdateSessionParticipants: (sessionId: number, participants: number[]) => void;
   onUpdateSessionAdditionalFee: (sessionId: number, additionalFee: number) => void;
   onUpdateSessionWaterFee: (sessionId: number, waterFee: number) => void;
+  onUpdateSessionExtraCharges: (sessionId: number, charges: SessionExtraCharge[]) => void;
+  activeMonthId: string;
   
   // App Settings
   appSettings: AppSettings;
@@ -62,6 +64,8 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   onUpdateSessionParticipants,
   onUpdateSessionAdditionalFee,
   onUpdateSessionWaterFee,
+  onUpdateSessionExtraCharges,
+  activeMonthId,
   appSettings,
   onUpdateAppSettings,
   showAppSettings,
@@ -240,6 +244,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
         onUpdateSessionWaterFee={(sessionId, fee) => {
           if (!isLocked) onUpdateSessionWaterFee(sessionId, fee);
         }}
+        onUpdateSessionExtraCharges={(sessionId, charges) => {
+          if (!isLocked) onUpdateSessionExtraCharges(sessionId, charges);
+        }}
+        activeMonthId={activeMonthId}
         onShowNotification={onShowNotification}
         isExpanded={sectionStates.sessions}
         onToggle={(state) => handleSectionToggle('sessions', state)}
