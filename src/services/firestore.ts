@@ -1,7 +1,9 @@
 import { db } from '../firebase';
-import { collection, deleteDoc, doc, getDocs, onSnapshot, query, orderBy, setDoc, writeBatch, DocumentReference } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, query, orderBy, setDoc, writeBatch, DocumentReference, runTransaction } from 'firebase/firestore';
+import { applyDispatchAction, DispatchAction } from '../dispatch';
 import { Player, Session, AppSettings, SessionSettings, SystemLog, Team, BillingMonth } from '../types';
 import { getMonthId } from '../utils';
+import { decodeSession, encodeSessionUpdate, StoredSession } from './sessionStorage';
 
 const playersCol = collection(db, 'players');
 const teamsCol = collection(db, 'teams');
@@ -29,6 +31,7 @@ export const subscribePlayers = (cb: (players: Player[]) => void) => {
         name: data.name,
         teamId: data.teamId,
         teamName: data.teamName,
+        skillLevel: data.skillLevel,
         hasPaid: data.hasPaid || false
       } as Player;
     });
@@ -63,13 +66,26 @@ export const deleteTeamDb = async (teamId: string) => {
 export const subscribeSessions = (cb: (sessions: Session[]) => void) => {
   const q = query(sessionsCol, orderBy('id', 'asc'));
   return onSnapshot(q, snapshot => {
-    const list: Session[] = snapshot.docs.map(d => d.data() as Session);
+    const list: Session[] = snapshot.docs.map(d => decodeSession(d.data() as StoredSession));
     cb(list);
   });
 };
 
 export const setSessionDb = async (session: Session) => {
-  await setDoc(doc(sessionsCol, String(session.id)), session);
+  // Host match state is updated independently; regular fee edits must preserve it.
+  const { dispatch, ...fields } = session;
+  await setDoc(doc(sessionsCol, String(session.id)), fields, { merge: true });
+};
+
+export const updateDispatchDb = async (sessionId: number, players: Player[], action: DispatchAction) => {
+  const reference = doc(sessionsCol, String(sessionId));
+  await runTransaction(db, async transaction => {
+    const snapshot = await transaction.get(reference);
+    if (!snapshot.exists()) throw new Error('This session no longer exists.');
+    const session = decodeSession(snapshot.data() as StoredSession);
+    const updates = applyDispatchAction(session, players, action, Date.now());
+    transaction.update(reference, encodeSessionUpdate(updates));
+  });
 };
 
 export const deleteSessionDb = async (sessionId: number) => {

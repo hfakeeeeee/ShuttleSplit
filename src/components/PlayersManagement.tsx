@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Player, Team } from '../types';
 import CollapsibleSection from './CollapsibleSection';
+import { useAuth } from './AuthContext';
 
 interface PlayersManagementProps {
   players: Player[];
@@ -25,10 +26,11 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
   onToggle,
   disabled = false
 }) => {
+  const { isLocked } = useAuth();
   const [showAddForm, setShowAddForm] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
-  const [editingPlayer, setEditingPlayer] = useState<{id: number, name: string, teamId: string} | null>(null);
+  const [editingPlayer, setEditingPlayer] = useState<{id: number, name: string, teamId: string, skillLevel: number} | null>(null);
   const [localExpanded, setLocalExpanded] = useState(true);
   
   const handleToggle = (newState: boolean) => {
@@ -79,7 +81,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
 
   const handleEditPlayer = (player: Player) => {
     if (!disabled) {
-      setEditingPlayer({ id: player.id, name: player.name, teamId: player.teamId || '' });
+      setEditingPlayer({ id: player.id, name: player.name, teamId: player.teamId || '', skillLevel: player.skillLevel ?? 3 });
     }
   };
 
@@ -94,6 +96,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
         const team = teams.find(item => item.id === editingPlayer.teamId);
         await onUpdatePlayer(editingPlayer.id, {
           name: editingPlayer.name.trim(),
+          skillLevel: editingPlayer.skillLevel,
           teamId: team?.id,
           teamName: team?.name
         });
@@ -178,7 +181,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
           ) : (
             players.map(player => (
               <div key={player.id} className="player-card slide-in">
-                {editingPlayer && editingPlayer.id === player.id ? (
+                {!isLocked && editingPlayer && editingPlayer.id === player.id ? (
                   <div className="player-edit-form">
                     <input
                       type="text"
@@ -197,6 +200,13 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                         </option>
                       ))}
                     </select>
+                    <label>Skill level
+                      <select value={editingPlayer.skillLevel} disabled={disabled} onChange={event => setEditingPlayer({ ...editingPlayer, skillLevel: Number(event.target.value) })}>
+                        {Array.from({ length: 8 }, (_, index) => (
+                          <option key={index + 1} value={index + 1}>Level {index + 1}</option>
+                        ))}
+                      </select>
+                    </label>
                     <div className="edit-actions">
                       <button className="btn btn-success btn-sm" onClick={handleSaveEdit}>
                         <i className="fas fa-check"></i>
@@ -210,6 +220,7 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                   <>
                     <div className="player-info">
                       <div className="player-name">{player.name}</div>
+                      {!isLocked && <div className="player-skill">Level {player.skillLevel ?? 3}{player.skillLevel === undefined ? ' (default)' : ''}</div>}
                       {player.teamName && (
                         <div className="player-team-badge">
                           <span className="player-team-label">Team</span>

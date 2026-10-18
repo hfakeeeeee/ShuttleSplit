@@ -1,4 +1,5 @@
 export interface Player {
+  skillLevel?: number; // 1–8, with 1 highest and 8 lowest; unset players use level 3
   id: number;
   name: string;
   teamId?: string;
@@ -12,6 +13,7 @@ export interface Team {
 }
 
 export interface Session {
+  dispatch?: DispatchState;
   id: number;
   name: string;
   date?: string;
@@ -20,6 +22,22 @@ export interface Session {
   additionalFee?: number; // Additional fee for this specific day
   waterFee?: number; // Water fee for this specific day
   extraCharges?: SessionExtraCharge[];
+}
+
+export interface CourtMatch {
+  id: string;
+  court: number;
+  sides: [[number, number], [number, number]];
+  names: Record<string, string>;
+  startedAt: number;
+  finishedAt?: number;
+  status: 'playing' | 'completed' | 'cancelled';
+}
+
+export interface DispatchState {
+  courtCount: number;
+  waitingSince: Record<string, number>;
+  matches: CourtMatch[];
 }
 
 export interface SessionExtraCharge {

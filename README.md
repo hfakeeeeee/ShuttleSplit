@@ -491,3 +491,16 @@ This builds the project and pushes `build/` to the `gh-pages` branch.
 
 ### Site URL
 - Your site will be available at `https://<your-username>.github.io/<your-repo>/`.
+
+
+## Host Match Control
+
+The Match Control tab replaces Register in the navigation (Ctrl+2). Existing planned-session data is retained; it is not converted into played sessions.
+
+1. In Settings, create a playing session and edit player skill levels (Level 1 through Level 8; Level 1 is highest and Level 8 is lowest). Players without a saved level use level 3.
+2. Unlock Settings, open Match Control, select the session, and check in players. Check-in adds billing attendance; leaving the queue preserves billing attendance. Correct billing attendance separately in Settings when needed.
+3. Choose 1?12 courts. Suggest a match on a free court, review or change all four slots, then start it.
+4. Suggestions prioritize the fewest completed matches, then the longest wait. The selected four are split to balance skill totals, with repeated partners penalized when balance is equal.
+5. Finish a match to increment each player's count and return them to the queue. Cancelled matches do not count and preserve the previous queue priority.
+
+Attendance, court count, and match history are saved under `sessions/{id}.dispatch` and synchronized through the existing session subscription. Transactions prevent two hosts from assigning the same player or court concurrently. No new collection or Firestore rule is required. Match counts are per playing session. Player names are preserved in match history.

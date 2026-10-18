@@ -1,0 +1,74 @@
+/* Hallmark · component: player check-in · genre: modern-minimal · theme: existing ShuttleSplit
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * pre-emit critique: P5 H5 E4 S5 R5 V4
+ */
+.checkin {
+  --checkin-space-xs: .25rem;
+  --checkin-space-sm: .5rem;
+  --checkin-space-md: .75rem;
+  --checkin-space-lg: 1rem;
+  --checkin-space-xl: 1.5rem;
+  --checkin-status-waiting: oklch(43% .11 160);
+  --checkin-status-playing: var(--primary-dark);
+  grid-column: 1 / -1;
+}
+[data-theme="dark"] .checkin { --checkin-status-waiting: oklch(80% .13 160); --checkin-status-playing: oklch(80% .1 255); }
+.checkin-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--checkin-space-lg); }
+.checkin-heading h3 { font-size: 1.2rem; }
+.checkin-heading p { font-size: .875rem; margin-top: var(--checkin-space-xs); }
+.checkin-total { font-size: .875rem; white-space: nowrap; color: var(--text-secondary); }
+.checkin-total strong { color: var(--text-primary); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.checkin-tools { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, .3fr); gap: var(--checkin-space-md); margin-top: var(--checkin-space-xl); }
+.checkin-search > span { display: flex; align-items: center; gap: var(--checkin-space-md); height: 44px; padding: 0 var(--checkin-space-md); border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-secondary); }
+.checkin-search input { width: 100%; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 0; background: var(--bg-primary); color: var(--text-primary); font: inherit; outline-offset: 3px; box-shadow: none; }
+.checkin-search input::placeholder { color: var(--text-secondary); }
+.checkin-search > span:focus-within { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+.dispatch-tab .checkin-search input:focus-visible { outline: none; }
+.dispatch-tab .checkin-team select { height: 44px; }
+.checkin button { font: inherit; font-size: .8125rem; line-height: 1; min-height: 44px; padding: var(--checkin-space-sm) var(--checkin-space-md); border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; white-space: nowrap; }
+.checkin-filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--checkin-space-sm); margin-top: var(--checkin-space-lg); }
+.checkin-filters button { display: inline-flex; align-items: center; gap: var(--checkin-space-sm); }
+.checkin-filters button span { font-size: .75rem; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+.checkin-filters button[aria-pressed="true"] { background: var(--primary-color); color: var(--on-primary-color); border-color: var(--primary-color); }
+.checkin-filters button[aria-pressed="true"] span { color: inherit; }
+.checkin-results { padding: var(--checkin-space-lg) 0 var(--checkin-space-sm); font-size: .75rem; color: var(--text-secondary); }
+.checkin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--checkin-space-md); }
+.checkin-player { min-width: 0; padding: var(--checkin-space-md); border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--surface-color); color: var(--text-primary); }
+.checkin-identity { display: flex; align-items: center; gap: var(--checkin-space-sm); min-width: 0; }
+.checkin-avatar { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-secondary); font-size: .75rem; font-weight: 600; }
+.checkin-identity > div { min-width: 0; flex: 1; }
+.checkin-identity h4 { font-size: .875rem; line-height: 1.4; overflow-wrap: anywhere; }
+.checkin-team-name { display: block; font-size: .75rem; color: var(--text-secondary); overflow-wrap: anywhere; }
+.checkin-game-count { font-size: .6875rem; flex-shrink: 0; color: var(--text-secondary); white-space: nowrap; }
+.checkin-player-bottom { display: flex; align-items: center; flex-wrap: wrap; gap: var(--checkin-space-sm); margin-top: var(--checkin-space-md); }
+.checkin-status { display: inline-flex; align-items: center; gap: var(--checkin-space-sm); font-size: .75rem; color: var(--text-secondary); }
+.checkin-status > span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.checkin-player[data-status="waiting"] .checkin-status { color: var(--checkin-status-waiting); }
+.checkin-player[data-status="playing"] .checkin-status { color: var(--checkin-status-playing); }
+.checkin-level { font-size: .6875rem; }
+.checkin button.checkin-toggle { margin-left: auto; display: inline-flex; align-items: center; gap: var(--checkin-space-sm); }
+.checkin-player[data-status="absent"] .checkin-toggle { color: var(--primary-color); border-color: var(--primary-color); }
+.checkin-player[data-status="playing"] .checkin-toggle:disabled { opacity: .8; }
+.checkin-pagination { display: flex; align-items: center; justify-content: space-between; gap: var(--checkin-space-md); margin-top: var(--checkin-space-lg); font-size: .75rem; color: var(--text-secondary); }
+.checkin-pagination > div { display: flex; align-items: center; gap: var(--checkin-space-sm); }
+.checkin-empty { display: grid; justify-items: center; gap: var(--checkin-space-sm); padding: var(--checkin-space-xl); text-align: center; }
+.checkin-empty > i { color: var(--text-secondary); }
+.checkin-empty p { font-size: .875rem; }
+.checkin-feedback { min-height: 1.5rem; padding-top: var(--checkin-space-sm); font-size: .8125rem; overflow-wrap: anywhere; }
+.checkin[data-state="success"] .checkin-feedback { color: var(--checkin-status-waiting); }
+.checkin[data-state="error"] .checkin-feedback { color: var(--text-primary); }
+.checkin[data-state="error"] .checkin-feedback > i { color: var(--danger-color); }
+.checkin[data-state="loading"] .checkin-grid { opacity: .75; }
+.checkin-help { margin-top: var(--checkin-space-sm); border-top: 1px solid var(--border-color); padding-top: var(--checkin-space-sm); font-size: .75rem; color: var(--text-secondary); }
+.checkin-help summary { cursor: pointer; min-height: 44px; align-content: center; }
+.checkin-help p { padding-bottom: var(--checkin-space-sm); }
+@media (hover: hover) {
+  .checkin button:not(:disabled):hover, .checkin.is-hover .checkin-toggle { background: var(--secondary-color); color: var(--text-primary); }
+  .checkin-filters button[aria-pressed="true"]:hover { background: var(--primary-dark); color: var(--on-primary-color); }
+  .checkin-search > span:hover { background: var(--surface-color); color: var(--text-primary); }
+}
+.checkin button:not(:disabled):active, .checkin.is-active .checkin-toggle { background: var(--secondary-color); color: var(--text-primary); transform: translateY(1px); }
+.checkin.is-focus .checkin-toggle { outline: 2px solid var(--primary-color); outline-offset: 3px; }
+.checkin button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 1000px) { .checkin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .checkin-grid, .checkin-tools { grid-template-columns: minmax(0, 1fr); } .checkin-heading { align-items: flex-start; flex-direction: column; gap: var(--checkin-space-sm); } .checkin-tools { margin-top: var(--checkin-space-lg); } .checkin-pagination { flex-wrap: wrap; } }

@@ -9,7 +9,7 @@ import Header from './components/Header';
 import Tabs from './components/Tabs';
 import SettingsTab from './components/SettingsTab';
 import SummaryTab from './components/SummaryTab';
-import RegisterTab from './components/RegisterTab';
+import DispatchTab from './components/DispatchTab';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
 import MonthSelector from './components/MonthSelector';
@@ -30,7 +30,6 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('summary');
   const [showAppSettings, setShowAppSettings] = useState(false);
   const [activeMonthId, setActiveMonthId] = useState(() => getMonthId());
-  const [monthDataVersion, setMonthDataVersion] = useState(0);
   
   // Custom hooks
   const { players, addPlayer, updatePlayer, removePlayer } = usePlayers();
@@ -90,7 +89,6 @@ const App: React.FC = () => {
     await deleteMonth(monthId);
     const fallbackMonthId = availableMonthIds.find(id => id !== monthId) || getMonthId();
     setActiveMonthId(fallbackMonthId);
-    setMonthDataVersion(version => version + 1);
     showNotification('Month and all related data deleted', 'success');
   };
 
@@ -152,7 +150,7 @@ const App: React.FC = () => {
       
       if (e.ctrlKey && e.key === '2') {
         e.preventDefault();
-        setActiveTab('register');
+        setActiveTab('dispatch');
       }
       
       if (e.ctrlKey && e.key === '3') {
@@ -173,7 +171,7 @@ const App: React.FC = () => {
             <Header />
 
           {/* Tabs Navigation */}
-          <Tabs activeTab={activeTab} onTabChange={handleTabChange} hasRegisterTab={true} />
+          <Tabs activeTab={activeTab} onTabChange={handleTabChange} />
 
           <MonthSelector
             activeMonthId={activeMonthId}
@@ -197,11 +195,10 @@ const App: React.FC = () => {
               />
             )}
             
-            {activeTab === 'register' && (
-              <RegisterTab
+            {activeTab === 'dispatch' && (
+              <DispatchTab
                 players={players}
-                activeMonthId={activeMonthId}
-                dataVersion={monthDataVersion}
+                sessions={monthSessions}
                 onShowNotification={showNotification}
               />
             )}
