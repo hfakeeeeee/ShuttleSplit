@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/ShuttleSplit/static/css/main.8ec3cdee.css",
-    "main.js": "/ShuttleSplit/static/js/main.ba79cc18.js",
+    "main.css": "/ShuttleSplit/static/css/main.3937ef95.css",
+    "main.js": "/ShuttleSplit/static/js/main.b9e4208d.js",
     "static/css/161.cf4f54b7.chunk.css": "/ShuttleSplit/static/css/161.cf4f54b7.chunk.css",
-    "static/js/161.0b2e0473.chunk.js": "/ShuttleSplit/static/js/161.0b2e0473.chunk.js",
+    "static/js/161.32024f57.chunk.js": "/ShuttleSplit/static/js/161.32024f57.chunk.js",
     "index.html": "/ShuttleSplit/index.html",
-    "main.8ec3cdee.css.map": "/ShuttleSplit/static/css/main.8ec3cdee.css.map",
-    "main.ba79cc18.js.map": "/ShuttleSplit/static/js/main.ba79cc18.js.map",
+    "main.3937ef95.css.map": "/ShuttleSplit/static/css/main.3937ef95.css.map",
+    "main.b9e4208d.js.map": "/ShuttleSplit/static/js/main.b9e4208d.js.map",
     "161.cf4f54b7.chunk.css.map": "/ShuttleSplit/static/css/161.cf4f54b7.chunk.css.map",
-    "161.0b2e0473.chunk.js.map": "/ShuttleSplit/static/js/161.0b2e0473.chunk.js.map"
+    "161.32024f57.chunk.js.map": "/ShuttleSplit/static/js/161.32024f57.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8ec3cdee.css",
-    "static/js/main.ba79cc18.js"
+    "static/css/main.3937ef95.css",
+    "static/js/main.b9e4208d.js"
   ]
 }
