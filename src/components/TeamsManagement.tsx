@@ -83,7 +83,7 @@ const TeamsManagement: React.FC<TeamsManagementProps> = ({
     <CollapsibleSection
       title="Teams Management"
       icon="fas fa-flag"
-      className={`players-section ${disabled ? 'disabled-section' : ''}`}
+      className={`players-section teams-section ${disabled ? 'disabled-section' : ''}`}
       defaultExpanded={true}
       isExpanded={isExpanded !== undefined ? isExpanded : localExpanded}
       onToggle={handleToggle}

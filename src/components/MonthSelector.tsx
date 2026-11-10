@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { formatMonthLabel } from '../utils';
 import { useAuth } from './AuthContext';
+import GlassSelect from './GlassSelect';
 
 interface MonthSelectorProps {
   activeMonthId: string;
@@ -70,12 +71,8 @@ const MonthSelector: React.FC<MonthSelectorProps> = ({
           <div className="month-selector-copy">
             <span className="month-selector-label">Viewing period</span>
             <div className="month-select-wrap">
-              <select value={activeMonthId} onChange={(e) => onSelect(e.target.value)} aria-label="Select billing month">
-                {monthIds.map(monthId => (
-                  <option key={monthId} value={monthId}>{formatMonthLabel(monthId)}</option>
-                ))}
-              </select>
-              <i className="fas fa-chevron-down" aria-hidden="true"></i>
+              <GlassSelect value={activeMonthId} onChange={onSelect} label="Select billing month"
+                options={monthIds.map(monthId => ({ value: monthId, label: formatMonthLabel(monthId) }))} />
             </div>
           </div>
         </div>

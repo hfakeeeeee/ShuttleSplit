@@ -233,6 +233,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
 
   return (
     <div className="tab-content fade-in">
+      <div className="summary-view-toolbar">
       {/* View Mode Toggle */}
       <div className="view-toggle-container">
         <div className="view-toggle">
@@ -265,6 +266,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({
         </label>
       </div>
 
+      </div>
       {viewMode === 'summary' ? (
         <Summary
           playerCosts={playerCosts}

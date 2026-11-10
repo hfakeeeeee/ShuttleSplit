@@ -164,3 +164,133 @@ body::before {
   .App .empty-state { padding: 44px 8px; }
   .footer-links { flex-wrap: wrap; justify-content: center; }
 }
+
+/* Refined focus, player cards and centered team headings. */
+.App .total-label { font-size: clamp(23px, 2.3vw, 30px); font-weight: 500; line-height: 1.35; }
+.App .total-value { font-size: clamp(30px, 3vw, 38px); }
+.total-revenue { gap: 16px; flex-wrap: wrap; }
+.App input:focus, .App select:focus, .App textarea:focus,
+.App input:focus-visible, .App select:focus-visible, .App textarea:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 10%, transparent);
+}
+.App button:focus { outline: none; }
+.App button:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 26%, transparent); }
+.App .month-selector { overflow: visible; position: relative; z-index: 2; }
+.glass-select { position: relative; width: 100%; }
+.App .glass-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 42px; padding: 3px 8px 3px 0; border: 0; border-radius: 10px; background: transparent; color: var(--text-primary); font: inherit; font-size: 24px; font-weight: 500; letter-spacing: -.5px; text-align: left; cursor: pointer; }
+.glass-select-trigger > i { font-size: 13px; color: var(--text-secondary); transition: transform .15s ease; }
+.glass-select-trigger[aria-expanded='true'] > i { transform: rotate(180deg); }
+.glass-select-menu { position: absolute; top: calc(100% + 12px); left: 0; min-width: 100%; width: max-content; max-width: min(320px, 75vw); max-height: 280px; overflow-y: auto; padding: 6px; background: var(--glass-fallback); border: 1px solid var(--glass-line); border-radius: 16px; box-shadow: var(--shadow-xl), inset 0 1px 0 rgb(255 255 255 / 15%); outline: none; z-index: 20; }
+.glass-select-option { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 14px; border-radius: 10px; color: var(--text-primary); font-size: 17px; cursor: pointer; }
+.glass-select-option.is-active { background: color-mix(in srgb, var(--primary-color) 14%, transparent); }
+.glass-select-option i { font-size: 13px; color: var(--primary-color); }
+.App .team-summary-heading { display: flex; width: fit-content; min-width: 96px; max-width: 100%; margin: 8px auto 28px; padding: 13px 26px; gap: 10px; border: 1px solid color-mix(in srgb, var(--primary-color) 65%, var(--glass-line)); background: linear-gradient(145deg, color-mix(in srgb, var(--primary-color) 30%, var(--glass-fallback)), color-mix(in srgb, var(--primary-color) 14%, var(--glass-fallback))); color: var(--text-primary); box-shadow: 0 0 24px color-mix(in srgb, var(--primary-color) 20%, transparent), 0 5px 16px rgb(0 0 0 / 12%), inset 0 1px 0 rgb(255 255 255 / 30%); font-size: 19px; font-weight: 600; letter-spacing: .03em; white-space: normal; overflow-wrap: anywhere; }
+.App .team-summary-heading i { display: none; }
+.App .team-summary-group { width: 100%; min-width: 0; margin-bottom: 32px; }
+.App .summary-grid, .App .players-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 20px; }
+.App .summary-card, .App .players-section .player-card { border: 1px solid var(--glass-line); border-radius: 22px; background: linear-gradient(145deg, color-mix(in srgb, var(--text-primary) 5%, transparent), transparent 60%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%); padding: 24px 20px; min-width: 0; }
+.App .summary-card:hover, .App .players-section .player-card:hover { transform: none; border-color: color-mix(in srgb, var(--primary-color) 32%, var(--glass-line)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%); }
+.App .summary-card.paid-card { border-width: 1px; border-color: color-mix(in srgb, var(--accent-color) 50%, var(--glass-line)); }
+.App .summary-header { padding-bottom: 22px; margin-bottom: 6px; border-bottom: 1px solid color-mix(in srgb, var(--glass-line) 70%, transparent); }
+.App .summary-card .player-info { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+.App .player-summary-name { justify-content: center; font-size: 20px; font-weight: 500; text-align: center; overflow-wrap: anywhere; }
+.App .player-summary-name i { font-size: 15px; color: var(--primary-color); }
+.App .summary-card .player-total { font-size: 26px; font-weight: 600; letter-spacing: -.6px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.App .session-breakdown { gap: 0; }
+.App .session-item { display: flex; gap: 12px; padding: 14px 0; background: transparent; border-radius: 0; border-bottom: 1px solid color-mix(in srgb, var(--glass-line) 38%, transparent); align-items: baseline; }
+.App .session-item:last-child { border-bottom: 0; padding-bottom: 0; }
+.App .session-name { min-width: 0; overflow-wrap: anywhere; color: var(--text-secondary); }
+.App .session-amount { margin-left: auto; text-align: right; font-variant-numeric: tabular-nums; }
+.App .summary-card { background: linear-gradient(155deg, color-mix(in srgb, var(--primary-color) 9%, transparent), color-mix(in srgb, var(--bg-primary) 32%, transparent) 65%); }
+.App .summary-card .session-item.not-participated { background: transparent; opacity: 1; }
+.App .summary-card .session-item.not-participated .session-name,
+.App .summary-card .session-item.not-participated .session-amount { font-style: normal; color: var(--text-light); font-weight: 400; }
+.App .summary-card .session-item.not-participated .session-name i { display: none; }
+.App .summary-card .session-item:not(.not-participated) .session-amount { color: var(--text-primary); font-weight: 600; }
+.App .summary-card .session-item .session-amount { flex-shrink: 0; }
+.App .players-section .player-card { flex-direction: column; align-items: stretch; gap: 24px; }
+.App .players-section .player-info { gap: 14px; }
+.App .players-section .player-name { font-size: 22px; line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; }
+.App .player-skill { color: var(--text-secondary); font-size: 15px; }
+.App .player-team-badge { background: color-mix(in srgb, var(--primary-color) 9%, transparent); border-color: var(--glass-line); padding: 8px 14px; max-width: 100%; flex-wrap: wrap; }
+.App .player-team-label { font-size: 12px; font-weight: 500; }
+.App .player-team-name { color: var(--text-primary); font-size: 16px; font-weight: 500; overflow-wrap: anywhere; }
+.App .players-section .player-actions { gap: 10px; border-top: 1px solid var(--glass-line); padding-top: 18px; }
+.App .players-section .player-actions button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.App .players-section .player-actions .btn-danger { background: transparent; color: var(--text-secondary); border: 1px solid var(--glass-line); }
+.App .players-section .player-actions .btn-danger:hover { color: var(--danger-color); background: color-mix(in srgb, var(--danger-color) 8%, transparent); }
+.App .player-edit-form { flex-direction: column; align-items: stretch; }
+@media(max-width: 767px) { .App .glass-select-trigger { font-size: 22px; } .App .total-summary { padding: 20px; } }
+
+/* Compact overview: keep the player list near the top of the viewport. */
+.container.app-shell { padding-top: 24px; }
+.header { margin-bottom: 18px; }
+.tabs-container { margin-bottom: 22px; }
+.tabs-header .tab-button { min-height: 54px; padding-block: 12px; }
+.workspace-toolbar { padding-bottom: 16px; }
+.workspace-toolbar h1 { font-size: 30px; }
+.App .month-selector { padding-block: 12px; margin-bottom: 18px; }
+.summary-view-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+.summary-view-toolbar .view-toggle-container, .summary-view-toolbar .view-options-row { margin: 0; padding: 0; }
+.summary-view-toolbar .view-options-row { width: auto; }
+.App .summary-section { padding-top: 22px; }
+.App .summary-section > h2 { margin-bottom: 16px; font-size: 22px; }
+.App .total-summary { padding: 12px 18px; margin-bottom: 18px; border-radius: 14px; background: color-mix(in srgb, var(--primary-color) 8%, transparent); }
+.App .total-label { font-size: 21px; font-weight: 500; }
+.App .total-value { font-size: 28px; font-weight: 600; }
+.App .team-summary-heading { margin-top: 0; margin-bottom: 20px; padding-block: 11px; }
+@media(max-width: 767px) {
+  .container.app-shell { padding-top: 16px; }
+  .workspace-toolbar h1 { font-size: 27px; }
+  .summary-view-toolbar { justify-content: center; }
+  .App .total-summary { padding: 12px 14px; }
+  .App .total-label { font-size: 18px; }
+  .App .total-value { font-size: 24px; }
+  .total-revenue { gap: 8px; }
+}
+@media(min-width: 768px) {
+  .App .summary-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 20px; }
+  .App .summary-section > h2 { margin-bottom: 20px; }
+  .App .summary-section > .total-summary { margin-bottom: 20px; padding: 10px 16px; }
+  .App .summary-section > .summary-content, .App .summary-section > .sheet-view-container, .App .summary-section > .qr-section, .App .summary-section > .empty-state { grid-column: 1 / -1; min-width: 0; }
+  .App .summary-section .total-revenue { gap: 24px; }
+}
+
+/* Status light: green means settled; lavender means attended. */
+:root { --paid-ink: #106744; --paid-fill: #e2f6ec; --paid-glow: rgb(16 135 85 / 18%); }
+[data-theme='dark'] { --paid-ink: #83edbc; --paid-fill: #193f39; --paid-glow: rgb(64 221 151 / 22%); }
+.App .summary-card.paid-card, .App .summary-card.paid-card:hover {
+  border-color: color-mix(in srgb, var(--paid-ink) 65%, transparent);
+  background: linear-gradient(155deg, color-mix(in srgb, var(--paid-ink) 13%, transparent), color-mix(in srgb, var(--bg-primary) 32%, transparent) 68%);
+  box-shadow: 0 0 22px var(--paid-glow), inset 0 1px 0 color-mix(in srgb, var(--paid-ink) 30%, transparent);
+}
+.summary-payment-status { display: flex; align-items: center; justify-content: center; gap: 7px; width: fit-content; margin: 0 auto 18px; padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; line-height: 1.4; }
+.summary-payment-status.is-paid { color: var(--paid-ink); background: var(--paid-fill); border: 1px solid color-mix(in srgb, var(--paid-ink) 50%, transparent); box-shadow: 0 0 16px var(--paid-glow); }
+.summary-payment-status.is-unpaid { color: var(--text-secondary); background: color-mix(in srgb, var(--text-primary) 5%, transparent); border: 1px solid var(--glass-line); }
+.App .summary-card .session-breakdown { gap: 8px; }
+.App .summary-card .session-item { padding: 11px 10px; border: 1px solid transparent; border-radius: 10px; }
+.App .summary-card .session-item:not(.not-participated) {
+  background: linear-gradient(110deg, color-mix(in srgb, var(--primary-color) 17%, transparent), color-mix(in srgb, var(--primary-color) 7%, transparent));
+  border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
+  box-shadow: 0 0 13px color-mix(in srgb, var(--primary-color) 10%, transparent), inset 2px 0 0 var(--primary-color);
+}
+.App .summary-card .session-item:not(.not-participated) .session-name { color: var(--text-primary); font-weight: 500; }
+.App .summary-card .session-item:last-child { padding-bottom: 11px; }
+.App .player-row.paid-row .player-cell, .App .player-row.paid-row .payment-cell { background: var(--paid-fill); }
+.App .player-row.paid-row .player-name, .App .payment-paid-icon { color: var(--paid-ink); }
+.App .paid-row .payment-checkbox { background: var(--paid-fill); border-radius: 10px; box-shadow: 0 0 16px var(--paid-glow); }
+.App .players-section { --section-ink: var(--primary-color); }
+.App .teams-section { --section-ink: var(--primary-color); }
+.App .teams-section.card h2 > i { color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 10%, transparent); }
+.App .teams-section .player-card,
+.App .players-section:not(.teams-section) .player-card { border-color: color-mix(in srgb, var(--primary-color) 32%, var(--glass-line)); background: linear-gradient(145deg, color-mix(in srgb, var(--primary-color) 8%, transparent), transparent 65%); box-shadow: 0 0 20px color-mix(in srgb, var(--primary-color) 9%, transparent), inset 0 1px 0 rgb(255 255 255 / 12%); }
+.App .teams-section .player-card:hover,
+.App .players-section:not(.teams-section) .player-card:hover { border-color: color-mix(in srgb, var(--primary-color) 48%, var(--glass-line)); box-shadow: 0 0 26px color-mix(in srgb, var(--primary-color) 15%, transparent), inset 0 1px 0 rgb(255 255 255 / 18%); }
+.App .teams-section .player-name i { color: var(--primary-color); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--primary-color) 20%, transparent)); }
+.App .teams-section .btn-primary { background: color-mix(in srgb, var(--primary-color) 12%, var(--bg-primary)); color: var(--text-primary); border: 1px solid color-mix(in srgb, var(--primary-color) 26%, transparent); }
+.App .players-section .player-team-badge { background: color-mix(in srgb, var(--primary-color) 11%, transparent); border-color: color-mix(in srgb, var(--primary-color) 30%, var(--glass-line)); box-shadow: 0 0 14px color-mix(in srgb, var(--primary-color) 11%, transparent), inset 0 1px 0 rgb(255 255 255 / 10%); }
+.App .players-section .player-team-name { color: color-mix(in srgb, var(--primary-color) 55%, var(--text-primary)); }
+.App .players-section .player-actions .btn-secondary { background: color-mix(in srgb, var(--text-primary) 5%, transparent); border-color: var(--glass-line); color: var(--text-secondary); }
+.App .players-section .player-actions .btn-danger { color: var(--text-secondary); background: transparent; border-color: var(--glass-line); }

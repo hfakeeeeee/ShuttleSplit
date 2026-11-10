@@ -235,13 +235,13 @@ const PlayersManagement: React.FC<PlayersManagementProps> = ({
                         className="btn btn-secondary btn-sm" 
                         onClick={() => handleEditPlayer(player)}
                       >
-                        <i className="fas fa-edit"></i>
+                        <i className="fas fa-edit" aria-hidden="true"></i><span>Edit</span>
                       </button>
                       <button 
                         className="btn btn-danger btn-sm" 
                         onClick={() => handleRemovePlayer(player.id, player.name)}
                       >
-                        <i className="fas fa-trash"></i>
+                        <i className="fas fa-trash" aria-hidden="true"></i><span>Remove</span>
                       </button>
                     </div>
                   </>

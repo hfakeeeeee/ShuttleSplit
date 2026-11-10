@@ -73,9 +73,13 @@ const Summary: React.FC<SummaryProps> = ({
                         </span>
                         <span className="player-total">
                           {formatCurrency(playerCost.totalCost)}
-                          {playerCost.player.hasPaid && <span className="payment-status-badge"></span>}
+
                         </span>
                       </div>
+                    </div>
+                    <div className={`summary-payment-status ${playerCost.player.hasPaid ? 'is-paid' : 'is-unpaid'}`}>
+                      <i className={playerCost.player.hasPaid ? 'fas fa-check-circle' : 'far fa-clock'} aria-hidden="true" />
+                      {playerCost.player.hasPaid ? 'Paid' : 'Unpaid'}
                     </div>
                     <div className="session-breakdown">
                       {playerCost.sessions.map((session, index) => (
@@ -108,9 +112,13 @@ const Summary: React.FC<SummaryProps> = ({
                       </span>
                       <span className="player-total">
                         {formatCurrency(playerCost.totalCost)}
-                        {playerCost.player.hasPaid && <span className="payment-status-badge"></span>}
+
                       </span>
                     </div>
+                  </div>
+                  <div className={`summary-payment-status ${playerCost.player.hasPaid ? 'is-paid' : 'is-unpaid'}`}>
+                    <i className={playerCost.player.hasPaid ? 'fas fa-check-circle' : 'far fa-clock'} aria-hidden="true" />
+                    {playerCost.player.hasPaid ? 'Paid' : 'Unpaid'}
                   </div>
                   <div className="session-breakdown">
                     {playerCost.sessions.map((session, index) => (
@@ -130,7 +138,7 @@ const Summary: React.FC<SummaryProps> = ({
           </div>
         )}
       </div>
-      
+
       {totalRevenue > 0 && (
         <PaymentQRCode />
       )}
