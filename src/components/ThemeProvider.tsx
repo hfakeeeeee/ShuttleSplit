@@ -23,8 +23,8 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('shuttleSplit_theme') as Theme;
-    return savedTheme || 'light';
+    const savedTheme = localStorage.getItem('shuttleSplit_inset_theme');
+    return savedTheme === 'light' ? 'light' : 'dark';
   });
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [theme]);
 
   useEffect(() => {
-    localStorage.setItem('shuttleSplit_theme', theme);
+    localStorage.setItem('shuttleSplit_inset_theme', theme);
   }, [theme]);
 
   return (

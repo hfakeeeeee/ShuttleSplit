@@ -1,4 +1,5 @@
-﻿import React from "react";
+import React from "react";
+import PaymentQRCode from './PaymentQRCode';
 import { PlayerCost, AppSettings, Player } from "../types";
 import { formatCurrency } from "../utils";
 
@@ -13,7 +14,6 @@ interface SummaryProps {
 const Summary: React.FC<SummaryProps> = ({
   playerCosts,
   sessionsCount,
-  settings,
   groupByTeam = true,
   onUpdatePlayer
 }) => {
@@ -132,46 +132,7 @@ const Summary: React.FC<SummaryProps> = ({
       </div>
       
       {totalRevenue > 0 && (
-        <div className="qr-section">
-          <h3><i className="fas fa-qrcode"></i> Payment Options</h3>
-          <div className="payment-methods">
-            {/* Bank Transfer
-            <div className="payment-method">
-              <div className="payment-qr-large">
-                <img 
-                  src={`${process.env.PUBLIC_URL}/images/Bank.jpg`} 
-                  alt="Bank Transfer" 
-                  className="payment-qr-image" 
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Bank.jpg`;
-                  }}
-                />
-              </div>
-            </div> */}
-
-            {/* MoMo */}
-            <div className="payment-method">
-              <div className="payment-qr-large">
-                {settings.momoQRImage ? (
-                  <img 
-                    src={settings.momoQRImage} 
-                    alt="MoMo Transfer" 
-                    className="payment-qr-image"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Momo.jpg`;
-                    }}
-                  />
-                ) : (
-                  <img 
-                    src={`${process.env.PUBLIC_URL}/images/Momo.jpg`} 
-                    alt="MoMo Transfer" 
-                    className="payment-qr-image"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <PaymentQRCode />
       )}
 
       {/* Image zoom removed */}

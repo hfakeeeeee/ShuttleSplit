@@ -1,0 +1,166 @@
+/* Liquid glass, horizontal navigation, larger type. Overrides the shared Soft controls. */
+:root {
+  --app-font: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --glass-bg: rgb(255 255 255 / 48%);
+  --glass-fallback: #f4f5fb;
+  --glass-line: rgb(255 255 255 / 85%);
+  --glass-shadow: 0 16px 48px rgb(39 45 95 / 10%), inset 0 1px 0 rgb(255 255 255 / 95%), inset 1px 0 0 rgb(255 255 255 / 45%), inset 0 -1px 0 rgb(255 255 255 / 25%);
+  --bg-secondary: #e7eaf5;
+  --bg-primary: #fff;
+  --surface-color: #f4f5fc;
+  --text-primary: #20283c;
+  --text-secondary: #515d74;
+  --text-light: #5f6b82;
+  --border-color: #cbd2e4;
+  --primary-color: #5146d9;
+  --primary-dark: #4335c3;
+  --on-primary-color: #fff;
+  --secondary-color: #e4e6f4;
+  --cat-1: var(--primary-color);
+  --cat-2: var(--primary-color);
+  --cat-3: var(--primary-color);
+  --cat-4: var(--primary-color);
+  --cat-1-bg: var(--primary-soft);
+  --cat-2-bg: var(--primary-soft);
+  --cat-3-bg: var(--primary-soft);
+  --cat-4-bg: var(--primary-soft);
+  --accent-to: var(--primary-color);
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+  --glass-bg: rgb(30 39 65 / 42%);
+  --glass-fallback: #202a43;
+  --glass-line: rgb(206 220 255 / 24%);
+  --glass-shadow: 0 20px 60px rgb(0 0 0 / 20%), inset 0 1px 0 rgb(235 242 255 / 30%), inset 1px 0 0 rgb(220 228 255 / 12%), inset 0 -1px 0 rgb(210 222 255 / 7%);
+  --bg-secondary: #101529;
+  --bg-primary: #26314d;
+  --surface-color: #27324e;
+  --text-primary: #eef2ff;
+  --text-secondary: #c0cbe3;
+  --text-light: #b0bed9;
+  --border-color: #4a5876;
+  --primary-color: #bbb4ff;
+  --primary-dark: #d0caff;
+  --on-primary-color: #211d46;
+  --secondary-color: #3c496a;
+  --primary-soft: #3b3c64;
+  --cat-1: var(--primary-color);
+  --cat-2: var(--primary-color);
+  --cat-3: var(--primary-color);
+  --cat-4: var(--primary-color);
+  --cat-1-bg: var(--primary-soft);
+  --cat-2-bg: var(--primary-soft);
+  --cat-3-bg: var(--primary-soft);
+  --cat-4-bg: var(--primary-soft);
+}
+body, [data-theme='dark'] body {
+  font-family: var(--app-font);
+  font-size: 17px;
+  line-height: 1.6;
+  background: var(--bg-secondary);
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 2% 8%, rgb(128 107 235 / 30%), transparent 48%), radial-gradient(ellipse at 98% 65%, rgb(136 143 220 / 18%), transparent 48%);
+  z-index: -1;
+}
+.App { overflow: visible; }
+.container.app-shell { display: block; max-width: 1360px; height: auto; padding: 32px; overflow: visible; }
+.app-topbar { width: 100%; }
+.header { margin-bottom: 28px; }
+.header-content { padding: 0 4px; }
+.header-bottom { position: static; width: auto; }
+.keyboard-shortcuts { display: none; }
+.logo h1 { font-size: 30px; letter-spacing: -1px; }
+.theme-toggle, .theme-toggle:hover { width: 48px; height: 48px; border-radius: 50%; font-size: 20px; }
+.tabs-header, .App .month-selector, .App .card, .App .dispatch-panel, .theme-toggle, .theme-toggle:hover, .App .view-toggle {
+  background: var(--glass-fallback);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow);
+}
+@supports (backdrop-filter: blur(24px)) {
+  .tabs-header, .App .month-selector, .App .card, .App .dispatch-panel, .theme-toggle, .theme-toggle:hover, .App .view-toggle {
+    background: var(--glass-bg);
+    background-image: linear-gradient(135deg, rgb(255 255 255 / 9%), transparent 32%, transparent 72%, rgb(255 255 255 / 3%));
+    backdrop-filter: blur(30px) saturate(165%);
+    -webkit-backdrop-filter: blur(30px) saturate(165%);
+  }
+}
+.tabs-container { margin: 0 0 36px; }
+.tabs-header { flex-direction: row; gap: 8px; padding: 8px; border-radius: 28px; }
+.tabs-header .tab-button { flex: 1; min-width: 0; min-height: 64px; justify-content: center; font-size: 17px; line-height: 1.4; padding: 16px; border-radius: 21px; }
+.tabs-header .tab-button i, .tabs-header .tab-button.active i { background: transparent; width: 24px; height: auto; flex: 0 0 24px; font-size: 21px; color: var(--text-secondary); }
+.tabs-header .tab-button.active { background: linear-gradient(150deg, color-mix(in srgb, var(--primary-color) 24%, transparent), color-mix(in srgb, var(--primary-color) 10%, transparent)); border-color: color-mix(in srgb, var(--primary-color) 38%, transparent); color: var(--text-primary); box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%), inset 0 -1px 0 rgb(255 255 255 / 8%), 0 6px 18px rgb(0 0 0 / 12%); }
+.tabs-header .tab-button.active i { color: var(--primary-color); }
+.tabs-header .tab-button:hover:not(.active) { background: color-mix(in srgb, var(--text-primary) 6%, transparent); }
+.app-workspace { height: auto; margin: 0; border: 0; border-radius: 0; background: transparent; overflow: visible; }
+.workspace-toolbar { padding: 0 4px 24px; }
+.workspace-toolbar h1 { font-size: 36px; line-height: 1.25; letter-spacing: -1px; font-weight: 600; }
+.workspace-scroll { padding: 0; overflow: visible; }
+.App .month-selector { padding: 20px 24px; border-radius: 22px; margin-bottom: 28px; }
+.month-selector-bar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; padding: 0; min-height: 60px; }
+.month-selector-current { gap: 16px; }
+.month-selector-copy { flex: none; }
+.month-selector-label { font-size: 13px; letter-spacing: .08em; line-height: 1.5; margin-bottom: 4px; }
+.App .month-select-wrap { width: 260px; max-width: 100%; }
+.App .month-select-wrap select { font-size: 24px; font-weight: 500; min-height: 38px; padding: 0 32px 0 0; border-radius: 0; background: transparent; border: 0; letter-spacing: -.5px; }
+.month-selector-icon { width: 48px; height: 48px; flex-basis: 48px; border-radius: 16px; background: color-mix(in srgb, var(--primary-color) 10%, transparent); }
+.month-selector-actions { gap: 10px; }
+.App .month-delete-trigger { width: 48px; padding: 0; background: transparent; border-color: var(--glass-line); }
+.App .month-create-trigger { background: color-mix(in srgb, var(--primary-color) 12%, transparent); border-color: color-mix(in srgb, var(--primary-color) 24%, transparent); color: var(--text-primary); }
+.App .month-create-trigger:disabled, .App .month-delete-trigger:disabled { opacity: .55; }
+.App .month-create-trigger:disabled { color: var(--text-secondary); background: transparent; border-color: var(--glass-line); }
+.App .month-create-trigger { width: auto; }
+.App .month-create-trigger span { display: inline; position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: nowrap; }
+.App .card, .App .dispatch-panel { padding: 30px; border-radius: 26px; }
+.App .card:hover { box-shadow: var(--glass-shadow); }
+.App .card h2, .App .section-header h2, .App .dispatch-panel h3 { font-size: 24px; line-height: 1.35; }
+.App .card h2 > i { width: 40px; height: 40px; flex-basis: 40px; font-size: 20px; }
+.App .btn, .App .toggle-btn, .App .month-create-trigger, .App .month-create-confirm, .App .month-delete-trigger, .App .extra-charge-save, .App .extra-charge-cancel { min-height: 48px; font-size: 16px; padding: 12px 18px; border-radius: 14px; }
+.App .btn-sm { min-height: 40px; font-size: 15px; padding: 8px 12px; }
+.App input:not([type='checkbox']):not([type='radio']):not([type='range']), .App select, .App textarea { font-size: 17px; min-height: 46px; border-radius: 12px; }
+.App .form-group label, .App .dispatch-tab label, .App .view-switch, .App .view-switch-label { font-size: 16px; }
+.App .view-toggle { padding: 5px; border-radius: 20px; }
+.App .toggle-btn { font-size: 16px; }
+.App .toggle-btn.active { background: var(--secondary-color); color: var(--text-primary); }
+.App .empty-state { padding: 60px 20px; }
+.App .empty-state p { font-size: 18px; max-width: 520px; }
+.App .empty-state > i { color: var(--cat-1); }
+.App .cost-sheet td, .App .cost-sheet th { font-size: 16px; padding: 16px; }
+.App .player-name, .App .player-summary-name, .App .session-title { font-size: 19px; }
+.App .session-item, .App .cost-label, .App .cost-value, .App .dispatch-tab p, .App .dispatch-tab small { font-size: 16px; }
+.App .total-label { font-size: 17px; }
+.App .total-value { font-size: 38px; }
+.App .dispatch-metrics span { font-size: 16px; }
+.App .dispatch-metrics strong { font-size: 34px; }
+.App .footer { margin-top: 36px; background: transparent; }
+.footer-text, .footer-link { font-size: 15px; }
+.App .modal-content, .App .extra-charge-dialog { background: var(--surface-color); border: 1px solid var(--glass-line); }
+.App .payment-methods { display: flex; justify-content: center; }
+.App .payment-method { width: min(100%, 480px); padding: 12px; background: var(--bg-primary); }
+.App .payment-qr-image { display: block; width: 100%; max-width: 100%; height: auto; max-height: none; object-fit: contain; border-radius: 12px; box-shadow: none; transform: none; }
+.App .payment-qr-image:hover { transform: none; box-shadow: none; }
+@media (max-width: 767px) {
+  .container.app-shell { padding: 20px 16px; }
+  .logo h1 { font-size: 27px; }
+  .header { margin-bottom: 22px; }
+  .tabs-container { margin-bottom: 28px; }
+  .tabs-header { border-radius: 24px; gap: 4px; padding: 6px; }
+  .tabs-header .tab-button { flex-direction: column; gap: 10px; justify-content: flex-start; padding: 12px 5px; font-size: 15px; border-radius: 18px; }
+  .workspace-toolbar h1 { font-size: 30px; }
+  .App .month-selector { padding: 16px; }
+  .month-selector-bar { padding: 0; grid-template-columns: minmax(0, 1fr); }
+  .month-selector-current { width: 100%; min-width: 0; gap: 12px; }
+  .month-selector-copy { flex: 1; min-width: 0; }
+  .App .month-select-wrap { width: 100%; }
+  .month-selector-actions { width: 100%; justify-content: flex-end; }
+  .App .month-select-wrap select { font-size: 22px; }
+  .App .card, .App .dispatch-panel { padding: 22px 18px; border-radius: 22px; }
+  .App .card h2, .App .section-header h2 { font-size: 23px; }
+  .App .toggle-btn { padding: 10px 12px; font-size: 15px; }
+  .App .empty-state { padding: 44px 8px; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+}

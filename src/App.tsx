@@ -3,6 +3,8 @@ import './App.css';
 import './components/player-styles.css';
 import './components/register-styles.css';
 import './components/settings-lock-styles.css';
+import './soft-theme.css';
+import './liquid-theme.css';
 
 // Components
 import Header from './components/Header';
@@ -167,11 +169,18 @@ const App: React.FC = () => {
     <ThemeProvider>
       <AuthProvider>
         <div className="App">
-          <div className="container">
+          <div className="container app-shell">
+            <div className="app-topbar">
             <Header />
 
           {/* Tabs Navigation */}
           <Tabs activeTab={activeTab} onTabChange={handleTabChange} />
+            </div>
+            <div className="app-workspace">
+              <div className="workspace-toolbar">
+                <h1>{activeTab === 'summary' ? 'Summary & Payment' : activeTab === 'dispatch' ? 'Match Control' : activeTab === 'diag' ? 'System Diagnostics' : 'Settings & Configuration'}</h1>
+              </div>
+              <div className="workspace-scroll">
 
           <MonthSelector
             activeMonthId={activeMonthId}
@@ -240,6 +249,9 @@ const App: React.FC = () => {
               </Suspense>
             )}
           </main>
+          <Footer />
+              </div>
+            </div>
 
           {/* Notification */}
           {notification && (
@@ -249,7 +261,6 @@ const App: React.FC = () => {
             />
           )}
         </div>
-        <Footer />
       </div>
       </AuthProvider>
     </ThemeProvider>

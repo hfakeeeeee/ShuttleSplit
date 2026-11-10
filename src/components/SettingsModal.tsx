@@ -25,21 +25,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setFormData(prev => ({
-          ...prev,
-          momoQRImage: result
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSave = () => {
     onSave(formData);
     onShowNotification('Settings saved successfully!', 'success');
@@ -107,31 +92,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="momoQRImage">MoMo QR Code Image</label>
-            <input
-              type="file"
-              id="momoQRImage"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ marginBottom: '0.5rem' }}
+            <span>MoMo QR Code Image</span>
+            <img
+              src={`${process.env.PUBLIC_URL}/images/new_momo.jpg`}
+              alt="Current MoMo payment QR code"
+              style={{ display: 'block', width: '100%', maxWidth: '240px', height: 'auto', marginTop: '12px', borderRadius: '12px' }}
             />
-            <small style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
-              Upload your MoMo QR code image (JPG, PNG, etc.)
-            </small>
-            {formData.momoQRImage && (
-              <div style={{ marginTop: '0.5rem' }}>
-                <img 
-                  src={formData.momoQRImage} 
-                  alt="MoMo QR Preview" 
-                  style={{ 
-                    maxWidth: '100px', 
-                    maxHeight: '100px', 
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border-color)'
-                  }} 
-                />
-              </div>
-            )}
           </div>
         </div>
         <div className="modal-footer">

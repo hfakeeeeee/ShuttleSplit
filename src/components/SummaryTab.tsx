@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PaymentQRCode from './PaymentQRCode';
 import { PlayerCost, AppSettings, Session, Player } from '../types';
 import Summary from './Summary';
 import { formatCurrency } from '../utils';
@@ -22,7 +23,7 @@ interface SheetViewProps {
   onUpdatePlayer?: (id: number, updates: Partial<Player>) => void;
 }
 
-const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, settings, groupByTeam = true, onUpdatePlayer }) => {
+const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, groupByTeam = true, onUpdatePlayer }) => {
   // Use shared auth context instead of local state
   const { isLocked } = useAuth();
   const activePlayers = players.filter(player => {
@@ -211,46 +212,7 @@ const SheetView: React.FC<SheetViewProps> = ({ sessions, players, playerCosts, s
         </div>
 
       {totalRevenue > 0 && (
-        <div className="qr-section">
-          <h3><i className="fas fa-qrcode"></i> Payment Options</h3>
-          <div className="payment-methods">
-            {/* Bank Transfer */}
-            <div className="payment-method">
-              <div className="payment-qr-large">
-                <img 
-                  src={`${process.env.PUBLIC_URL}/images/Bank.jpg`} 
-                  alt="Bank Transfer" 
-                  className="payment-qr-image" 
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Bank.jpg`;
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* MoMo */}
-            <div className="payment-method">
-              <div className="payment-qr-large">
-                {settings.momoQRImage ? (
-                  <img 
-                    src={settings.momoQRImage} 
-                    alt="MoMo Transfer" 
-                    className="payment-qr-image"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = `${process.env.PUBLIC_URL}/images/Momo.jpg`;
-                    }}
-                  />
-                ) : (
-                  <img 
-                    src={`${process.env.PUBLIC_URL}/images/Momo.jpg`} 
-                    alt="MoMo Transfer" 
-                    className="payment-qr-image"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <PaymentQRCode />
       )}
 
       {/* Image zoom removed */}
